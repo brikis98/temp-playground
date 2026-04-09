@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bizcloud-ai
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: bizcloud-ai
+  template:
+    metadata:
+      labels:
+        app: bizcloud-ai
+    spec:
+      containers:
+      - name: bizcloud-ai
+        image: bizcloud-ai:prod
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: bizcloud-ai
+spec:
+  selector:
+    app: bizcloud-ai
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: bizcloud-ai
+spec:
+  parentRefs:
+  - name: bizcloud-ai-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: bizcloud-ai
+      port: 80
