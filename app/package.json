@@ -1,0 +1,24 @@
+{
+  "name": "sample-app",
+  "description": "Sample app",
+  "version": "0.0.1",
+  "main": "app.js",
+  "scripts": {
+    "start": "if [[ $NODE_ENV == 'production' ]]; then node server.js; else nodemon server.js; fi",
+    "test": "jest --verbose"
+  },
+  "author": "Yevgeniy Brikman",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^5.0.1",
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.2.2"
+  },
+  "nodemonConfig": {
+    "ext": "js,ts,json,ejs"
+  }
+}
