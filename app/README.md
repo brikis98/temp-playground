@@ -40,10 +40,17 @@ docker build --target test -t bizcloud-ai:test .
 docker build --target prod -t bizcloud-ai:<VERSION> .
 ```
 
-To run the dev image:
+To run the dev image (with code bind-mounted from the host OS for hot reload):
 
 ```shell
-docker run --rm -p 8080:8080 -it --init bizcloud-ai:dev
+docker run \
+  --rm \
+  -p 8080:8080 \
+  -it \
+  --init \
+  -v .:/usr/src/app \
+  -v /usr/src/app/node_modules \
+  bizcloud-ai:dev
 ```
 
 To run the test image:
