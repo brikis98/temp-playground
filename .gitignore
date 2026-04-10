@@ -1,8 +1,14 @@
+# Node.js
 node_modules
 
+# IntelliJ
 *.iml
 .idea
 
+# Terraform / OpenTofu
 .terraform
 *.tfstate
 *.tfstate.*
+
+# tfvars files I use for local testing and don't want committed
+tofu/live/bizcloud-ai/terraform.tfvars
