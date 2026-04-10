@@ -77,6 +77,13 @@ docker buildx create --name multi --use
 docker buildx inspect --bootstrap
 ```
 
+Authenticate to your ECR repository:
+
+```shell
+aws ecr get-login-password --region us-east-2 \
+| docker login --username AWS --password-stdin <your-account-id>.dkr.ecr.us-east-2.amazonaws.com
+```
+
 You can then build and push Docker images for multiple CPU architectures:
 
 ```shell
