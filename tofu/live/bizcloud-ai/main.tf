@@ -44,6 +44,11 @@ module "eks_cluster_add_ons" {
   depends_on = [module.eks_cluster]
 }
 
+resource "aws_ecr_repository" "sample_app" {
+  name         = "bizcloud-ai"
+  force_delete = true
+}
+
 data "aws_vpc" "default" {
   default = true
 }

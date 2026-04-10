@@ -22,3 +22,8 @@ output "external_dns_iam_role_arn" {
   description = "IAM role ARN used by ExternalDNS service account when enabled."
   value       = module.eks_cluster_add_ons.external_dns_iam_role_arn
 }
+
+output "registry_url" {
+  description = "URL of the ECR repo"
+  value       = aws_ecr_repository.sample_app.repository_url
+}
