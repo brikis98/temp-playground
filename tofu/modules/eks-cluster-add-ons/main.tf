@@ -8,7 +8,7 @@ data "aws_ssoadmin_instances" "current" {
 
 locals {
   oidc_issuer_hostpath    = replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")
-  oidc_provider_arn       = aws_iam_openid_connect_provider.eks.arn
+  oidc_provider_arn       = var.enable_external_dns ? aws_iam_openid_connect_provider.eks[0].arn : null
   external_dns_txt_owner  = var.cluster_name
   argocd_idc_instance_arn = var.enable_argocd ? tolist(data.aws_ssoadmin_instances.current[0].arns)[0] : null
 
@@ -30,16 +30,21 @@ locals {
 }
 
 data "tls_certificate" "cluster_oidc_issuer" {
-  url = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
+  count = var.enable_external_dns ? 1 : 0
+  url   = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "eks" {
+  count = var.enable_external_dns ? 1 : 0
+
   url             = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.cluster_oidc_issuer.certificates[0].sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.cluster_oidc_issuer[0].certificates[0].sha1_fingerprint]
 }
 
 data "aws_iam_policy_document" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
   statement {
     effect = "Allow"
     actions = [
@@ -61,11 +66,15 @@ data "aws_iam_policy_document" "external_dns" {
 }
 
 resource "aws_iam_policy" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
   name   = "${var.cluster_name}-external-dns"
-  policy = data.aws_iam_policy_document.external_dns.json
+  policy = data.aws_iam_policy_document.external_dns[0].json
 }
 
 data "aws_iam_policy_document" "external_dns_assume_role" {
+  count = var.enable_external_dns ? 1 : 0
+
   statement {
     effect  = "Allow"
     actions = ["sts:AssumeRoleWithWebIdentity"]
@@ -92,21 +101,27 @@ data "aws_iam_policy_document" "external_dns_assume_role" {
 }
 
 resource "aws_iam_role" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
   name               = "${var.cluster_name}-external-dns"
-  assume_role_policy = data.aws_iam_policy_document.external_dns_assume_role.json
+  assume_role_policy = data.aws_iam_policy_document.external_dns_assume_role[0].json
 }
 
 resource "aws_iam_role_policy_attachment" "external_dns" {
-  role       = aws_iam_role.external_dns.name
-  policy_arn = aws_iam_policy.external_dns.arn
+  count = var.enable_external_dns ? 1 : 0
+
+  role       = aws_iam_role.external_dns[0].name
+  policy_arn = aws_iam_policy.external_dns[0].arn
 }
 
 resource "kubernetes_service_account_v1" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
   metadata {
     name      = var.external_dns_service_account_name
     namespace = var.external_dns_namespace
     annotations = {
-      "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns.arn
+      "eks.amazonaws.com/role-arn" = aws_iam_role.external_dns[0].arn
     }
     labels = {
       "app.kubernetes.io/name" = "external-dns"
@@ -115,6 +130,8 @@ resource "kubernetes_service_account_v1" "external_dns" {
 }
 
 resource "helm_release" "external_dns" {
+  count = var.enable_external_dns ? 1 : 0
+
   name             = "external-dns"
   repository       = "https://kubernetes-sigs.github.io/external-dns"
   chart            = "external-dns"

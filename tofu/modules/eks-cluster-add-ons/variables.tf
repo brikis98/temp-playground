@@ -7,14 +7,21 @@ variable "cluster_name" {
   type        = string
 }
 
-variable "external_dns_chart_version" {
-  description = "The version of the ExternalDNS Helm chart to use to install ExternalDNS. See https://artifacthub.io/packages/helm/external-dns/external-dns for available versions."
-  type        = string
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------
+
+variable "enable_external_dns" {
+  description = "Set to true to install ExternalDNS."
+  type        = bool
+  default     = false
+}
+
+variable "external_dns_chart_version" {
+  description = "The version of the ExternalDNS Helm chart to use to install ExternalDNS. See https://artifacthub.io/packages/helm/external-dns/external-dns for available versions."
+  type        = string
+  default     = "1.20.0"
+}
 
 variable "external_dns_domain_filters" {
   description = "Optional DNS suffixes ExternalDNS is allowed to manage. Empty list means no domain filter."
@@ -63,4 +70,3 @@ variable "argocd_rbac_role_mapping" {
   }))
   default = []
 }
-
