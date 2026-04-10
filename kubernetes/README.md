@@ -6,7 +6,7 @@ This folder uses Kustomize overlays so one app config works in both environments
 
 - `base/`: Deployment (2 replicas), Service, HTTPRoute
 - `overlays/docker-desktop/`: local Gateway (`gatewayClassName: nginx`)
-- `overlays/eks-alb/`: AWS GatewayClass + Gateway (`gatewayClassName: aws-alb`)
+- `overlays/eks-alb/`: AWS Gateway (`gatewayClassName: aws-alb`)
 
 ## Usage with Docker Desktop 
 
@@ -108,7 +108,23 @@ helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
 ```shell
 # Verify controller and GatewayClass
 kubectl get deployment -n kube-system aws-load-balancer-controller
-kubectl get gatewayclass
+```
+
+```shell
+# Create GatewayClass for ALB (platform-level resource)
+kubectl apply -f - <<'EOF'
+apiVersion: gateway.networking.k8s.io/v1
+kind: GatewayClass
+metadata:
+  name: aws-alb
+spec:
+  controllerName: gateway.k8s.aws/alb
+EOF
+```
+
+```shell
+# Verify GatewayClass exists
+kubectl get gatewayclass aws-alb
 ```
 
 Deploy the app:
