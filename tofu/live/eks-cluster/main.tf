@@ -7,11 +7,18 @@ module "eks_cluster" {
 
   name                     = "jim-testing"
   eks_version              = "1.35"
-  min_worker_nodes         = 2
-  max_worker_nodes         = 5
   control_plane_subnet_ids = data.aws_subnets.default.ids
-  worker_node_subnet_ids   = data.aws_subnets.default.ids
-  instance_type            = "t3.micro"
+}
+
+module "eks_cluster_add_ons" {
+  source = "../../modules/eks-cluster-add-ons"
+
+  cluster_name = module.eks_cluster.cluster_name
+
+  enable_external_dns        = true
+  external_dns_chart_version = "1.20.0"
+
+  depends_on = [module.eks_cluster]
 }
 
 data "aws_vpc" "default" {
