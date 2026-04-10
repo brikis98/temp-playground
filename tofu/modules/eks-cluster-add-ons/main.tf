@@ -19,13 +19,13 @@ locals {
     }
   }
 
-  external_dns_values = length(var.external_dns_domain_filters) > 0 ? merge(local.external_dns_values_base, {
+  external_dns_values = merge(local.external_dns_values_base, {
     domainFilters = var.external_dns_domain_filters
-  }) : local.external_dns_values_base
+  })
 }
 
 data "tls_certificate" "cluster_oidc_issuer" {
-  url   = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
+  url = data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer
 }
 
 resource "aws_iam_openid_connect_provider" "eks" {
@@ -96,7 +96,7 @@ resource "aws_iam_role_policy_attachment" "external_dns" {
   policy_arn = aws_iam_policy.external_dns.arn
 }
 
-resource "kubernetes_service_account" "external_dns" {
+resource "kubernetes_service_account_v1" "external_dns" {
   metadata {
     name      = var.external_dns_service_account_name
     namespace = var.external_dns_namespace
@@ -121,6 +121,6 @@ resource "helm_release" "external_dns" {
 
   depends_on = [
     aws_iam_role_policy_attachment.external_dns,
-    kubernetes_service_account.external_dns,
+    kubernetes_service_account_v1.external_dns,
   ]
 }
