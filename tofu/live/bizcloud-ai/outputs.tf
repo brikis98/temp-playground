@@ -23,7 +23,7 @@ output "external_dns_addon_arn" {
   value       = module.eks_cluster_add_ons.external_dns_addon_arn
 }
 
-output "registry_url" {
+output "ecr_repo_url" {
   description = "URL of the ECR repo"
   value       = aws_ecr_repository.sample_app.repository_url
 }

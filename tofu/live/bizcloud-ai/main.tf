@@ -19,6 +19,7 @@ module "eks_cluster_add_ons" {
 
   enable_argocd            = true
   argocd_rbac_role_mapping = var.argocd_rbac_role_mapping
+  aws_identity_center_arn  = tolist(data.aws_ssoadmin_instances.current.arns)[0]
 
   depends_on = [module.eks_cluster]
 }
@@ -38,3 +39,5 @@ data "aws_subnets" "default" {
     values = [data.aws_vpc.default.id]
   }
 }
+
+data "aws_ssoadmin_instances" "current" {}

@@ -2,20 +2,12 @@ data "aws_eks_cluster" "cluster" {
   name = var.cluster_name
 }
 
-data "aws_ssoadmin_instances" "current" {
-  count = var.enable_argocd ? 1 : 0
-}
-
 data "aws_eks_addon_version" "external_dns" {
   count = var.enable_external_dns && var.external_dns_addon_version == null ? 1 : 0
 
   addon_name         = "external-dns"
   kubernetes_version = data.aws_eks_cluster.cluster.version
   most_recent        = true
-}
-
-locals {
-  argocd_idc_instance_arn = var.enable_argocd ? tolist(data.aws_ssoadmin_instances.current[0].arns)[0] : null
 }
 
 resource "aws_eks_addon" "external_dns" {
@@ -77,7 +69,7 @@ resource "aws_eks_capability" "argocd" {
     argo_cd {
       namespace = var.argocd_namespace
       aws_idc {
-        idc_instance_arn = local.argocd_idc_instance_arn
+        idc_instance_arn = var.aws_identity_center_arn
       }
 
       dynamic "rbac_role_mapping" {

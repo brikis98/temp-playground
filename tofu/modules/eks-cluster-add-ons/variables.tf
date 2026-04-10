@@ -29,6 +29,12 @@ variable "enable_argocd" {
   default     = false
 }
 
+variable "aws_identity_center_arn" {
+  description = "The ARN of the AWS Identity Center instance to use to configure SSO for ArgoCD. Must be set of enable_argocd is true."
+  type        = string
+  default     = null
+}
+
 variable "argocd_namespace" {
   description = "The namespace to deploy ArgoCD into."
   type        = string
