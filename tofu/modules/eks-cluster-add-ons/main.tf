@@ -151,6 +151,17 @@ resource "aws_iam_role" "argocd_capability" {
   assume_role_policy = data.aws_iam_policy_document.argocd_capability_assume_role[0].json
 }
 
+# Sometimes, when creating the ArgoCD capability, you get the error "The policy must include sts:AssumeRole and
+# sts:TagSession actions granting access to the AWS service capabilities.eks.amazonaws.com." The IAM role defines both
+# of these actions, so this is probably some sort of timing issue with the IAM role not having had time to propagate
+# before the capability tries to use it. To work around that, we add a 20 second sleep.
+resource "time_sleep" "argocd_role_propagated" {
+  count = var.enable_argocd ? 1 : 0
+
+  create_duration = "20s"
+  depends_on      = [aws_iam_role.argocd_capability]
+}
+
 resource "aws_eks_capability" "argocd" {
   count = var.enable_argocd ? 1 : 0
 
@@ -168,4 +179,6 @@ resource "aws_eks_capability" "argocd" {
       }
     }
   }
+
+  depends_on = [time_sleep.argocd_role_propagated]
 }
