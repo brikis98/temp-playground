@@ -124,3 +124,11 @@ resource "helm_release" "external_dns" {
     kubernetes_service_account_v1.external_dns,
   ]
 }
+
+resource "helm_release" "argocd" {
+  name             = "argocd"
+  repository       = "https://argoproj.github.io/argo-helm"
+  chart            = "argo-cd"
+  namespace        = var.argocd_namespace
+  create_namespace = true
+}

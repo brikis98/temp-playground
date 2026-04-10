@@ -33,3 +33,9 @@ variable "external_dns_service_account_name" {
   type        = string
   default     = "external-dns"
 }
+
+variable "argocd_namespace" {
+  description = "The namespace to deploy ArgoCD into."
+  type        = string
+  default     = "argocd"
+}
