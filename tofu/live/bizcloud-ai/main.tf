@@ -15,7 +15,7 @@ module "eks_cluster_add_ons" {
 
   cluster_name = module.eks_cluster.cluster_name
 
-  enable_external_dns = false
+  enable_external_dns = true
 
   enable_argocd            = true
   argocd_rbac_role_mapping = var.argocd_rbac_role_mapping
