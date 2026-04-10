@@ -16,12 +16,6 @@ variable "external_dns_chart_version" {
 # OPTIONAL PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "enable_external_dns" {
-  description = "Set to true to install ExternalDNS via Helm with IRSA."
-  type        = bool
-  default     = true
-}
-
 variable "external_dns_domain_filters" {
   description = "Optional DNS suffixes ExternalDNS is allowed to manage. Empty list means no domain filter."
   type        = list(string)
