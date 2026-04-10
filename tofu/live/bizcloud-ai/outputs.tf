@@ -18,9 +18,9 @@ output "cluster_certificate_authority" {
   value       = module.eks_cluster.cluster_certificate_authority
 }
 
-output "external_dns_iam_role_arn" {
-  description = "IAM role ARN used by ExternalDNS service account when enabled."
-  value       = module.eks_cluster_add_ons.external_dns_iam_role_arn
+output "external_dns_addon_arn" {
+  description = "ARN of the ExternalDNS EKS add-on when enabled."
+  value       = module.eks_cluster_add_ons.external_dns_addon_arn
 }
 
 output "registry_url" {

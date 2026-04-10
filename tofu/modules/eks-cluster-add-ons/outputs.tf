@@ -1,6 +1,6 @@
-output "external_dns_iam_role_arn" {
-  description = "IAM role ARN used by ExternalDNS service account."
-  value       = var.enable_external_dns ? aws_iam_role.external_dns[0].arn : null
+output "external_dns_addon_arn" {
+  description = "ARN of the ExternalDNS EKS add-on when enabled."
+  value       = var.enable_external_dns ? aws_eks_addon.external_dns[0].arn : null
 }
 
 output "argocd_namespace" {
