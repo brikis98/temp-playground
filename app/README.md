@@ -64,3 +64,26 @@ To run the prod image:
 ```shell
 docker run --rm -p 8080:8080 -it --init bizcloud-ai:<VERSION>
 ```
+
+## Building and pushing the Docker image for prod
+
+You have to build Docker images for a specific CPU architecture. For example, if you have an M-series Mac, you need to
+build for `linux/arm64`. If you are going to deploy in an EKS cluster, you typically have to build for `linux/amd64`.
+
+To do that, you first need to create and use a `buildx` builder with Docker:
+
+```shell
+docker buildx create --name multi --use
+docker buildx inspect --bootstrap
+```
+
+You can then build and push Docker images for multiple CPU architectures:
+
+```shell
+docker buildx build \
+  --target prod \
+  --platform linux/amd64,linux/arm64 \
+  -t <ECR_REPO_URL>:<VERSION> \
+  --push \
+  .
+```
