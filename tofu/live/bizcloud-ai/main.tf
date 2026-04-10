@@ -40,6 +40,7 @@ module "eks_cluster_add_ons" {
   cluster_name = module.eks_cluster.cluster_name
 
   external_dns_chart_version = "1.20.0"
+  enable_argocd              = true
 
   depends_on = [module.eks_cluster]
 }

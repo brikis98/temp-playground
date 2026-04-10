@@ -2,10 +2,15 @@ data "aws_eks_cluster" "cluster" {
   name = var.cluster_name
 }
 
+data "aws_ssoadmin_instances" "current" {
+  count = var.enable_argocd ? 1 : 0
+}
+
 locals {
-  oidc_issuer_hostpath   = replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")
-  oidc_provider_arn      = aws_iam_openid_connect_provider.eks.arn
-  external_dns_txt_owner = var.cluster_name
+  oidc_issuer_hostpath    = replace(data.aws_eks_cluster.cluster.identity[0].oidc[0].issuer, "https://", "")
+  oidc_provider_arn       = aws_iam_openid_connect_provider.eks.arn
+  external_dns_txt_owner  = var.cluster_name
+  argocd_idc_instance_arn = var.enable_argocd ? tolist(data.aws_ssoadmin_instances.current[0].arns)[0] : null
 
   external_dns_values_base = {
     provider   = "aws"
@@ -125,10 +130,42 @@ resource "helm_release" "external_dns" {
   ]
 }
 
-resource "helm_release" "argocd" {
-  name             = "argocd"
-  repository       = "https://argoproj.github.io/argo-helm"
-  chart            = "argo-cd"
-  namespace        = var.argocd_namespace
-  create_namespace = true
+data "aws_iam_policy_document" "argocd_capability_assume_role" {
+  count = var.enable_argocd ? 1 : 0
+
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole", "sts:TagSession"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["capabilities.eks.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "argocd_capability" {
+  count = var.enable_argocd ? 1 : 0
+
+  name               = "${var.cluster_name}-argocd-capability"
+  assume_role_policy = data.aws_iam_policy_document.argocd_capability_assume_role[0].json
+}
+
+resource "aws_eks_capability" "argocd" {
+  count = var.enable_argocd ? 1 : 0
+
+  cluster_name              = var.cluster_name
+  capability_name           = var.argocd_capability_name
+  type                      = "ARGOCD"
+  role_arn                  = aws_iam_role.argocd_capability[0].arn
+  delete_propagation_policy = "RETAIN"
+
+  configuration {
+    argo_cd {
+      namespace = var.argocd_namespace
+      aws_idc {
+        idc_instance_arn = local.argocd_idc_instance_arn
+      }
+    }
+  }
 }

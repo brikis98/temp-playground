@@ -34,8 +34,20 @@ variable "external_dns_service_account_name" {
   default     = "external-dns"
 }
 
+variable "enable_argocd" {
+  description = "Set to true to create the managed EKS Argo CD capability."
+  type        = bool
+  default     = false
+}
+
 variable "argocd_namespace" {
   description = "The namespace to deploy ArgoCD into."
+  type        = string
+  default     = "argocd"
+}
+
+variable "argocd_capability_name" {
+  description = "Name of the managed EKS Argo CD capability."
   type        = string
   default     = "argocd"
 }

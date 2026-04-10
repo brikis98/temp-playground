@@ -4,6 +4,11 @@ output "external_dns_iam_role_arn" {
 }
 
 output "argocd_namespace" {
-  description = "Kubernetes namespace for the Argo CD Helm release."
-  value       = helm_release.argocd.namespace
+  description = "Kubernetes namespace for the EKS managed Argo CD capability."
+  value       = var.enable_argocd ? var.argocd_namespace : null
+}
+
+output "argocd_capability_arn" {
+  description = "ARN of the EKS managed Argo CD capability."
+  value       = var.enable_argocd ? aws_eks_capability.argocd[0].arn : null
 }
