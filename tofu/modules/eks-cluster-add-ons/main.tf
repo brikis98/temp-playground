@@ -177,6 +177,17 @@ resource "aws_eks_capability" "argocd" {
       aws_idc {
         idc_instance_arn = local.argocd_idc_instance_arn
       }
+
+      dynamic "rbac_role_mapping" {
+        for_each = var.argocd_rbac_role_mapping
+        content {
+          role = rbac_role_mapping.value.role
+          identity {
+            id   = rbac_role_mapping.value.identity.id
+            type = rbac_role_mapping.value.identity.type
+          }
+        }
+      }
     }
   }
 
