@@ -6,7 +6,7 @@ This folder uses Kustomize overlays with one core app definition and environment
 
 - `base/`: Deployment (2 replicas) + Service (`type: LoadBalancer`)
 - `overlays/docker-desktop/`: local deployment using the base resources directly
-- `overlays/eks-nlb/`: EKS deployment patch for image + NLB + TLS annotations
+- `overlays/eks-alb/`: EKS deployment patch for image + `Service: ClusterIP` + ALB Ingress
 
 ## Docker Desktop (localhost)
 
@@ -22,69 +22,38 @@ Get the local endpoint:
 kubectl get svc bizcloud-ai
 ```
 
-On Docker Desktop Kubernetes, the `EXTERNAL-IP` is typically `localhost`, so the app is reachable on:
+On Docker Desktop Kubernetes, the `EXTERNAL-IP` is typically `localhost`, so the app is usually reachable on:
 
 - `http://localhost`
 
-## EKS (NLB + ACM TLS)
+## EKS (ALB Ingress)
 
-Update these values in `overlays/eks-nlb/service-nlb-tls-patch.yaml`:
+What this overlay does:
 
-- `service.beta.kubernetes.io/aws-load-balancer-ssl-cert` -> your ACM certificate ARN (same region as EKS/NLB)
-- Optional NLB settings such as scheme or health check path
+- Patches the app service from `LoadBalancer` to `ClusterIP` (so Service does not create an NLB)
+- Creates `IngressClassParams` + `IngressClass` for ALB
+- Creates an `Ingress` that provisions an ALB
+
+Update these values before applying:
+
+- `overlays/eks-alb/deployment-image-patch.yaml`: ECR image tag
+
+Authenticate to the EKS cluster:
+
+```shell
+aws eks update-kubeconfig \
+  --region us-east-2 \
+  --name <CLUSTER_NAME>
+```
 
 Deploy:
 
 ```shell
-kubectl apply -k ./overlays/eks-nlb
+kubectl apply -k ./overlays/eks-alb
 ```
 
-Get the NLB hostname:
+Get the ALB hostname:
 
 ```shell
-kubectl get svc bizcloud-ai -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+kubectl get ingress bizcloud-ai -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
-
-## Route 53 custom domain example
-
-Use an alias record from your domain to the NLB hostname returned above.
-
-1. Find your Route 53 hosted zone ID for the domain:
-
-```shell
-aws route53 list-hosted-zones-by-name --dns-name example.com
-```
-
-2. Create or update an alias `A` record to the NLB:
-
-```shell
-cat > /tmp/route53-alias.json <<'JSON'
-{
-  "Comment": "Alias app.example.com to EKS NLB",
-  "Changes": [
-    {
-      "Action": "UPSERT",
-      "ResourceRecordSet": {
-        "Name": "app.example.com",
-        "Type": "A",
-        "AliasTarget": {
-          "HostedZoneId": "Z35SXDOTRQ7X7K",
-          "DNSName": "k8s-default-bizcloud-1234567890.us-east-2.elb.amazonaws.com",
-          "EvaluateTargetHealth": false
-        }
-      }
-    }
-  ]
-}
-JSON
-
-aws route53 change-resource-record-sets \
-  --hosted-zone-id Z123456789ABC \
-  --change-batch file:///tmp/route53-alias.json
-```
-
-Notes:
-
-- `AliasTarget.HostedZoneId` is the NLB hosted zone ID (not your public hosted zone ID).
-- `--hosted-zone-id` is your public Route 53 hosted zone ID (for example `example.com`).
-- ACM certificate must be in the same AWS region as the NLB.
