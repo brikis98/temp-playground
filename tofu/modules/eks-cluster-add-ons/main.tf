@@ -45,6 +45,20 @@ resource "aws_iam_role" "argocd_capability" {
   assume_role_policy = data.aws_iam_policy_document.argocd_capability_assume_role[0].json
 }
 
+resource "aws_eks_access_policy_association" "argocd_capability_cluster_access" {
+  count = var.enable_argocd && var.enable_argocd_cluster_access_policy_association ? 1 : 0
+
+  cluster_name  = var.cluster_name
+  principal_arn = aws_iam_role.argocd_capability[0].arn
+  policy_arn    = var.argocd_cluster_access_policy_arn
+
+  access_scope {
+    type = "cluster"
+  }
+
+  depends_on = [aws_iam_role.argocd_capability]
+}
+
 # Sometimes, when creating the ArgoCD capability, you get the error "The policy must include sts:AssumeRole and
 # sts:TagSession actions granting access to the AWS service capabilities.eks.amazonaws.com." The IAM role defines both
 # of these actions, so this is probably some sort of timing issue with the IAM role not having had time to propagate

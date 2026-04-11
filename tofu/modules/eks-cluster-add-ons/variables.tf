@@ -47,6 +47,18 @@ variable "argocd_capability_name" {
   default     = "argocd"
 }
 
+variable "enable_argocd_cluster_access_policy_association" {
+  description = "Set to true to attach an EKS access policy to the Argo CD capability role for target-cluster access."
+  type        = bool
+  default     = true
+}
+
+variable "argocd_cluster_access_policy_arn" {
+  description = "EKS cluster access policy ARN to associate to the Argo CD capability role."
+  type        = string
+  default     = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
+}
+
 variable "argocd_rbac_role_mapping" {
   description = "The IAM Identity Center users or groups to grant access to ArgoCD via SSO. Role values must be one of: ADMIN, EDITOR, VIEWER. Identity type must be one of: SSO_USER or SSO_GROUP. Identity id must be the ID of the corresponding IAM Identity Center user or group."
   type = list(object({
