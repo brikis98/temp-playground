@@ -57,3 +57,11 @@ Get the ALB hostname:
 ```shell
 kubectl get ingress bizcloud-ai -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
+
+## Argo CD instructions
+
+Add the app to Argo CD as follows:
+
+```shell
+kubectl apply -k ./argocd
+```
