@@ -7,4 +7,4 @@ spec:
     spec:
       containers:
       - name: bizcloud-ai
-        image: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai:v1
+        image: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai:v2
