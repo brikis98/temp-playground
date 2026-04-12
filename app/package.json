@@ -1,7 +1,6 @@
 {
-  "name": "sample-app",
-  "description": "Sample app",
-  "version": "0.0.1",
+  "name": "bizcloud-ai",
+  "description": "BizCloud AI. By Business Corp.",
   "type": "module",
   "main": "app.js",
   "scripts": {
