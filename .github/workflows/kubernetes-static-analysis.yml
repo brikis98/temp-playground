@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  static-analysis:
+  yamllint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -28,17 +28,20 @@ jobs:
       - name: Install yamllint
         run: python -m pip install --user yamllint
 
-      - name: Setup Kustomize
-        uses: imranismail/setup-kustomize@v3
-
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.6
-
       - name: yamllint kubernetes/
         run: |
           export PATH="$HOME/.local/bin:$PATH"
           cd kubernetes
           yamllint .
+
+  kustomize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v3
 
       - name: Validate kustomize builds
         run: |
@@ -46,6 +49,15 @@ jobs:
           kustomize build kubernetes/overlays/docker-desktop >/dev/null
           kustomize build kubernetes/overlays/eks-alb >/dev/null
           kustomize build kubernetes/argocd >/dev/null
+
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.6
 
       - name: trivy config kubernetes/
         run: trivy config --severity MEDIUM,HIGH,CRITICAL --exit-code 1 kubernetes/

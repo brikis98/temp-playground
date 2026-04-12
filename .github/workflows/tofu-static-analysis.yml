@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  static-analysis:
+  tofu-fmt:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,17 +23,17 @@ jobs:
       - name: Setup OpenTofu
         uses: opentofu/setup-opentofu@v2
 
-      - name: Setup TFLint
-        uses: terraform-linters/setup-tflint@v6
-
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.6
-
-      - name: Setup Checkov
-        run: python3 -m pip install --user checkov
-
       - name: tofu fmt -check -recursive
         run: tofu fmt -check -recursive tofu
+
+  tofu-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v2
 
       - name: tofu init -backend=false
         working-directory: tofu/live/bizcloud-ai
@@ -43,14 +43,41 @@ jobs:
         working-directory: tofu/live/bizcloud-ai
         run: tofu validate
 
+  tflint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v6
+
       - name: tflint --init && tflint
         working-directory: tofu/live/bizcloud-ai
         run: |
           tflint --init
           tflint
 
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.6
+
       - name: trivy config tofu/
         run: trivy config --severity MEDIUM,HIGH,CRITICAL --exit-code 1 tofu/
+
+  checkov:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Checkov
+        run: python3 -m pip install --user checkov
 
       - name: checkov -d tofu/
         run: |
