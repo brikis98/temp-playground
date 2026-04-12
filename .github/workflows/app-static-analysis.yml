@@ -1,0 +1,39 @@
+name: App Static Analysis
+
+on:
+  pull_request:
+    paths:
+      - 'app/**'
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'app/**'
+
+permissions:
+  contents: read
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Prettier format check
+        run: npx --yes prettier@3.5.3 --check "app/**/*.{js,json,md,ejs}"
+
+      - name: ESLint static analysis
+        run: |
+          npx --yes eslint@9.25.1 app \
+            --no-config-lookup \
+            --ext .js \
+            --rule 'no-unused-vars:error' \
+            --rule 'no-undef:error' \
+            --rule 'no-unreachable:error' \
+            --rule 'eqeqeq:error'
