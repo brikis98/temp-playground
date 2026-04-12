@@ -34,7 +34,14 @@ jobs:
         run: npm ci
 
       - name: Prettier format check
-        run: npx prettier --check --ignore-unknown .
+        run: |
+          set -euo pipefail
+          if ! npx prettier --check --ignore-unknown .; then
+            echo ""
+            echo "Files that are not properly formatted:"
+            npx prettier --list-different --ignore-unknown .
+            exit 1
+          fi
 
       - name: ESLint static analysis
         run: npx eslint .
