@@ -37,7 +37,8 @@ jobs:
       - name: yamllint kubernetes/
         run: |
           export PATH="$HOME/.local/bin:$PATH"
-          yamllint kubernetes/
+          cd kubernetes
+          yamllint .
 
       - name: Validate kustomize builds
         run: |
