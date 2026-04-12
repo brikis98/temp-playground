@@ -13,10 +13,10 @@ spec:
         app: bizcloud-ai
     spec:
       containers:
-      - name: bizcloud-ai
-        image: bizcloud-ai:prod
-        ports:
-        - containerPort: 8080
+        - name: bizcloud-ai
+          image: bizcloud-ai:prod
+          ports:
+            - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -27,5 +27,5 @@ spec:
   selector:
     app: bizcloud-ai
   ports:
-  - port: 80
-    targetPort: 8080
+    - port: 80
+      targetPort: 8080

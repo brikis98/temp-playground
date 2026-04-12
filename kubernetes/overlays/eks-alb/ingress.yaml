@@ -8,12 +8,12 @@ metadata:
 spec:
   ingressClassName: alb
   rules:
-  - http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: bizcloud-ai
-            port:
-              number: 80
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: bizcloud-ai
+                port:
+                  number: 80
