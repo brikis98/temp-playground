@@ -1,0 +1,69 @@
+name: Docker Test And Release
+
+on:
+  push:
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+  id-token: write
+
+env:
+  AWS_REGION: us-east-2
+  ECR_REPO: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
+  AWS_ROLE_TO_ASSUME: TODO
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build Docker image (test target)
+        run: docker build --target test -t bizcloud-ai:test-${IMAGE_TAG} app
+
+      - name: Run tests in Docker
+        run: docker run --rm bizcloud-ai:test-${IMAGE_TAG}
+
+  publish-main:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push Docker image (prod target)
+        run: |
+          docker build --target prod -t "${ECR_REPO}:${IMAGE_TAG}" app
+          docker push "${ECR_REPO}:${IMAGE_TAG}"
+
+      - name: Update Kubernetes deployment image tag
+        run: |
+          sed -i -E "s|^([[:space:]]*image:[[:space:]]*).*$|\1${ECR_REPO}:${IMAGE_TAG}|" kubernetes/overlays/eks-alb/deployment-image-patch.yaml
+
+      - name: Commit and push YAML update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kubernetes/overlays/eks-alb/deployment-image-patch.yaml
+          if git diff --cached --quiet; then
+            echo "No YAML changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: update EKS image tag to ${IMAGE_TAG} [skip ci]"
+          git push origin HEAD:main
