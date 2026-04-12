@@ -12,9 +12,19 @@ spec:
       labels:
         app: bizcloud-ai
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: bizcloud-ai
           image: bizcloud-ai:prod
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
           ports:
             - containerPort: 8080
 ---
