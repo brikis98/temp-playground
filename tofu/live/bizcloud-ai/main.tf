@@ -30,6 +30,15 @@ resource "aws_ecr_repository" "sample_app" {
   force_delete = true
 }
 
+module "github_actions_oidc_iam" {
+  source = "../../modules/github-actions-oidc-iam"
+
+  github_owner                = "brikis98"
+  github_repo                 = "temp-playground"
+  create_github_oidc_provider = true
+  ecr_repository_arn          = aws_ecr_repository.sample_app.arn
+}
+
 # To use load balancing with EKS in Auto Mode, you have to add tags to subnets that the load balancers can be deployed
 # into: https://docs.aws.amazon.com/eks/latest/userguide/tag-subnets-auto.html
 resource "aws_ec2_tag" "subnet_tags_for_eks_load_balancers" {

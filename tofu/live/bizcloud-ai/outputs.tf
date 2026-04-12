@@ -27,3 +27,23 @@ output "ecr_repo_url" {
   description = "URL of the ECR repo"
   value       = aws_ecr_repository.sample_app.repository_url
 }
+
+output "github_oidc_provider_arn" {
+  description = "ARN of the GitHub OIDC provider used by CI roles"
+  value       = module.github_actions_oidc_iam.github_oidc_provider_arn
+}
+
+output "github_actions_docker_push_role_arn" {
+  description = "IAM role ARN for Docker build/push workflow"
+  value       = module.github_actions_oidc_iam.docker_push_role_arn
+}
+
+output "github_actions_tofu_plan_role_arn" {
+  description = "IAM role ARN for tofu plan workflow"
+  value       = module.github_actions_oidc_iam.tofu_plan_role_arn
+}
+
+output "github_actions_tofu_apply_role_arn" {
+  description = "IAM role ARN for tofu apply workflow"
+  value       = module.github_actions_oidc_iam.tofu_apply_role_arn
+}
