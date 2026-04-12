@@ -1,0 +1,118 @@
+name: Tofu Live Plan And Apply
+
+on:
+  pull_request:
+    paths:
+      - 'tofu/live/bizcloud-ai/**'
+  push:
+    branches:
+      - main
+    paths:
+      - 'tofu/live/bizcloud-ai/**'
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: read
+
+env:
+  AWS_REGION: us-east-2
+  TOFU_PLAN_ROLE_ARN: TODO
+  TOFU_APPLY_ROLE_ARN: TODO
+
+jobs:
+  plan-on-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Configure AWS credentials for plan (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.TOFU_PLAN_ROLE_ARN }}
+
+      - name: Run tofu plan
+        id: plan
+        working-directory: tofu/live/bizcloud-ai
+        run: |
+          set -euo pipefail
+          tofu init -no-color -input=false
+          tofu plan -no-color -input=false
+
+      - name: Find existing plan comment
+        id: find-plan-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- tofu-live-plan-comment -->'
+
+      - name: Create or update PR plan comment
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-plan-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            <!-- tofu-live-plan-comment -->
+            ## OpenTofu Plan
+
+            Commit: `${{ github.sha }}`
+            Directory: `${{ env.TOFU_DIR }}`
+            Result: `${{ steps.plan.outcome == 'success' && '✅' || '⚠️' }}`
+
+            ```text
+            ${{ steps.plan.outputs.stdout }}
+            ```
+
+  apply-on-main:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Configure AWS credentials for apply (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.TOFU_APPLY_ROLE_ARN }}
+
+      - name: Run tofu apply
+        id: apply
+        working-directory: tofu/live/bizcloud-ai
+        run: |
+          set -euo pipefail
+          tofu init -no-color -input=false
+          tofu apply -no-color -input=false -lock-timeout=60m -auto-approve
+
+      - uses: jwalton/gh-find-current-pr@master
+        id: find_pr
+        with:
+          state: all
+
+      - name: Create PR apply comment
+        if: steps.find_pr.outputs.number
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ steps.find_pr.outputs.number }}
+          body: |
+            ## OpenTofu Apply
+
+            Commit: `${{ github.sha }}`
+            Directory: `${{ env.TOFU_DIR }}`
+            Result: `${{ steps.apply.outcome == 'success' && '✅' || '⚠️' }}`
+
+            ```text
+            ${{ steps.apply.outputs.stdout }}
+            ```
