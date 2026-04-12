@@ -27,7 +27,7 @@ jobs:
         uses: terraform-linters/setup-tflint@v4
 
       - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v0.2.2
+        uses: aquasecurity/setup-trivy@v0.2.6
 
       - name: Setup Checkov
         run: python3 -m pip install --user checkov
