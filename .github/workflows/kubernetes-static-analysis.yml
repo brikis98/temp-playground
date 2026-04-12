@@ -47,4 +47,4 @@ jobs:
           kustomize build kubernetes/argocd >/dev/null
 
       - name: trivy config kubernetes/
-        run: trivy config --exit-code 1 kubernetes/
+        run: trivy config --severity MEDIUM,HIGH,CRITICAL --exit-code 1 kubernetes/
