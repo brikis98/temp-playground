@@ -16,6 +16,9 @@ permissions:
 jobs:
   static-analysis:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -24,16 +27,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 20
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
 
       - name: Prettier format check
-        run: npx --yes prettier@3.5.3 --check --ignore-unknown "app/**/*"
+        run: npx prettier --check --ignore-unknown .
 
       - name: ESLint static analysis
-        run: |
-          npx --yes eslint@9.25.1 app \
-            --no-config-lookup \
-            --ext .js \
-            --rule 'no-unused-vars:error' \
-            --rule 'no-undef:error' \
-            --rule 'no-unreachable:error' \
-            --rule 'eqeqeq:error'
+        run: npx eslint .
