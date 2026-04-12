@@ -5,5 +5,8 @@ resources:
 - ingress.yaml
 - ingress-class.yaml
 patches:
-- path: deployment-image-patch.yaml
 - path: service-clusterip-patch.yaml
+images:
+- name: bizcloud-ai
+  newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
+  newTag: v2

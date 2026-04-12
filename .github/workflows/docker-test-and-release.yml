@@ -54,15 +54,19 @@ jobs:
           docker build --target prod -t "${ECR_REPO}:${IMAGE_TAG}" app
           docker push "${ECR_REPO}:${IMAGE_TAG}"
 
+      - name: Setup Kustomize
+        uses: imranismail/setup-kustomize@v2
+
       - name: Update Kubernetes deployment image tag
         run: |
-          sed -i -E "s|^([[:space:]]*image:[[:space:]]*).*$|\1${ECR_REPO}:${IMAGE_TAG}|" kubernetes/overlays/eks-alb/deployment-image-patch.yaml
+          cd kubernetes/overlays/eks-alb
+          kustomize edit set image bizcloud-ai="${ECR_REPO}:${IMAGE_TAG}"
 
       - name: Commit and push YAML update
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add kubernetes/overlays/eks-alb/deployment-image-patch.yaml
+          git add kubernetes/overlays/eks-alb/kustomization.yaml
           if git diff --cached --quiet; then
             echo "No YAML changes to commit."
             exit 0

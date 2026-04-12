@@ -36,7 +36,7 @@ What this overlay does:
 
 Update these values before applying:
 
-- `overlays/eks-alb/deployment-image-patch.yaml`: ECR image tag
+- `overlays/eks-alb/kustomization.yaml` (`images`): ECR image name and tag override
 
 Authenticate to the EKS cluster:
 
