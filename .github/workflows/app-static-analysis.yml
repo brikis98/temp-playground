@@ -26,7 +26,7 @@ jobs:
           node-version: 20
 
       - name: Prettier format check
-        run: npx --yes prettier@3.5.3 --check "app/**/*.{js,json,md,ejs}"
+        run: npx --yes prettier@3.5.3 --check --ignore-unknown "app/**/*"
 
       - name: ESLint static analysis
         run: |
