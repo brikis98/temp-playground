@@ -1,6 +1,7 @@
 # BizCloud AI Kubernetes
 
-This folder uses Kustomize overlays with one core app definition and environment-specific patches.
+This folder has YAML code to deploy the BizCloud AI app into Kubernetes. It uses Kustomize overlays with one core app 
+definition and environment-specific patches.
 
 ## Structure
 
