@@ -1,0 +1,58 @@
+name: Tofu Static Analysis
+
+on:
+  pull_request:
+    paths:
+      - 'tofu/**'
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'tofu/**'
+
+permissions:
+  contents: read
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v1
+
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v0.2.2
+
+      - name: Setup Checkov
+        run: python3 -m pip install --user checkov
+
+      - name: tofu fmt -check -recursive
+        run: tofu fmt -check -recursive tofu
+
+      - name: tofu init -backend=false
+        working-directory: tofu/live/bizcloud-ai
+        run: tofu init -backend=false
+
+      - name: tofu validate
+        working-directory: tofu/live/bizcloud-ai
+        run: tofu validate
+
+      - name: tflint --init && tflint
+        working-directory: tofu/live/bizcloud-ai
+        run: |
+          tflint --init
+          tflint
+
+      - name: trivy config tofu/
+        run: trivy config tofu/
+
+      - name: checkov -d tofu/
+        run: |
+          export PATH="$HOME/.local/bin:$PATH"
+          checkov -d tofu/
