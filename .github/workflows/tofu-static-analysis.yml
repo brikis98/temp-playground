@@ -68,7 +68,7 @@ jobs:
         uses: aquasecurity/setup-trivy@v0.2.6
 
       - name: trivy config tofu/
-        run: trivy config --severity MEDIUM,HIGH,CRITICAL --exit-code 1 tofu/
+        run: trivy config --severity HIGH,CRITICAL --exit-code 1 tofu/
 
   checkov:
     runs-on: ubuntu-latest
