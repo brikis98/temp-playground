@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: bizcloud-ai-preview
+spec:
+  type: ClusterIP
+  selector:
+    app: bizcloud-ai
+  ports:
+    - port: 80
+      targetPort: 8080

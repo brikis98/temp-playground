@@ -8,6 +8,7 @@ definition and environment-specific patches.
 - `base/`: Deployment (2 replicas) + Service (`type: LoadBalancer`)
 - `overlays/docker-desktop/`: local deployment using the base resources directly
 - `overlays/eks-alb/`: EKS deployment patch for image + `Service: ClusterIP` + ALB Ingress
+- `overlays/eks-alb-blue-green/`: EKS deployment with ALB Ingress + Argo Rollouts blue-green strategy
 - `argo-rollouts/`: Argo Rollouts install manifests (single-command install via Kustomize)
 
 ## Docker Desktop (localhost)
@@ -81,4 +82,29 @@ Verify:
 ```shell
 kubectl -n argo-rollouts get deploy argo-rollouts
 kubectl get crd rollouts.argoproj.io
+```
+
+## Blue-green update flow (EKS blue-green overlay)
+
+1) Change image tag in `overlays/eks-alb-blue-green/kustomization.yaml` (`images[].newTag`)
+
+2) Apply the overlay:
+
+```shell
+kubectl apply -k ./overlays/eks-alb-blue-green
+```
+
+3) Check rollout status:
+
+```shell
+kubectl get rollout bizcloud-ai
+kubectl argo rollouts get rollout bizcloud-ai --watch
+```
+
+With `autoPromotionEnabled: false`, rollout pauses before switching production traffic.
+
+4) Promote when ready:
+
+```shell
+kubectl argo rollouts promote bizcloud-ai
 ```

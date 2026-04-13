@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: bizcloud-ai
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: bizcloud-ai
+  template:
+    metadata:
+      labels:
+        app: bizcloud-ai
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bizcloud-ai
+          image: bizcloud-ai:prod
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 8080
+  strategy:
+    blueGreen:
+      activeService: bizcloud-ai
+      previewService: bizcloud-ai-preview
+      autoPromotionEnabled: true
