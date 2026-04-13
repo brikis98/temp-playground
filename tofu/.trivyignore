@@ -1,0 +1,6 @@
+# Temporarily ignore errors about the EKS cluster being public. We'll make it private in the networking chapter.
+AWS-0040
+AWS-0041
+
+# Temporarily ignore errors about encryption in the EKS cluster. We'll enable encryption in the security chapter
+AWS-0039
