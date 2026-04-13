@@ -8,6 +8,7 @@ definition and environment-specific patches.
 - `base/`: Deployment (2 replicas) + Service (`type: LoadBalancer`)
 - `overlays/docker-desktop/`: local deployment using the base resources directly
 - `overlays/eks-alb/`: EKS deployment patch for image + `Service: ClusterIP` + ALB Ingress
+- `argo-rollouts/`: Argo Rollouts install manifests (single-command install via Kustomize)
 
 ## Docker Desktop (localhost)
 
@@ -65,4 +66,19 @@ Add the app to Argo CD as follows:
 
 ```shell
 kubectl apply -k ./argocd
+```
+
+## Argo Rollouts install (single command)
+
+Install Argo Rollouts controller + CRDs:
+
+```shell
+kubectl apply -k ./argo-rollouts
+```
+
+Verify:
+
+```shell
+kubectl -n argo-rollouts get deploy argo-rollouts
+kubectl get crd rollouts.argoproj.io
 ```
