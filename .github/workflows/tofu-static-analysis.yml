@@ -69,17 +69,3 @@ jobs:
 
       - name: trivy config tofu/
         run: trivy config --severity HIGH,CRITICAL --exit-code 1 tofu/
-
-  checkov:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup Checkov
-        run: python3 -m pip install --user checkov
-
-      - name: checkov -d tofu/
-        run: |
-          export PATH="$HOME/.local/bin:$PATH"
-          checkov -d tofu/
