@@ -103,8 +103,31 @@ kubectl argo rollouts get rollout bizcloud-ai --watch
 
 With `autoPromotionEnabled: false`, rollout pauses before switching production traffic.
 
-4) Promote when ready:
+4) Check the preview environment
+
+You can test your code in the preview environment before the load balancer exposes it to users:
+
+```shell
+kubectl port-forward svc/bizcloud-ai-preview 8081:80
+```
+
+Open http://localhost:8081 in your browser.
+
+5) Promote when ready:
+
+[Installing the Argo Rollouts plugin for 
+`kubectl`](https://argo-rollouts.readthedocs.io/en/stable/features/kubectl-plugin/) (e.g., run 
+`brew install argoproj/tap/kubectl-argo-rollouts`) and to promote, run the following:
 
 ```shell
 kubectl argo rollouts promote bizcloud-ai
+```
+
+Or you can do it with vanilla `kubectl` as follows:
+
+```shell
+kubectl patch rollouts.argoproj.io bizcloud-ai \
+  --subresource=status \
+  --type merge \
+  -p '{"status":{"pauseConditions":null}}'
 ```
