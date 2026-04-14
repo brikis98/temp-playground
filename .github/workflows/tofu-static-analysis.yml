@@ -67,5 +67,6 @@ jobs:
       - name: Setup Trivy
         uses: aquasecurity/setup-trivy@v0.2.6
 
-      - name: trivy config tofu/
-        run: trivy config --severity HIGH,CRITICAL --exit-code 1 tofu/
+      - name: trivy config
+        working-directory: tofu/live/bizcloud-ai
+        run: trivy config --severity HIGH,CRITICAL --exit-code 1 .
