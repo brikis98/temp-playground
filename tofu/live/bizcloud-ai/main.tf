@@ -43,7 +43,7 @@ resource "aws_ecr_repository" "sample_app" {
   }
 
   tags = {
-    test = "pr-test-2"
+    test = "pr-test-4"
   }
 }
 
