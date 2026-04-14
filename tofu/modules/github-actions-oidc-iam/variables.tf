@@ -17,6 +17,16 @@ variable "ecr_repository_arn" {
   type        = string
 }
 
+variable "tofu_state_bucket_name" {
+  description = "Name of the S3 bucket that stores OpenTofu remote state."
+  type        = string
+}
+
+variable "tofu_state_key" {
+  description = "S3 object key for the OpenTofu remote state file."
+  type        = string
+}
+
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------

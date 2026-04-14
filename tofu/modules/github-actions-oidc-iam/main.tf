@@ -12,6 +12,11 @@ locals {
   main_branch_sub  = "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/main"
   any_branch_sub   = "repo:${var.github_owner}/${var.github_repo}:ref:refs/heads/*"
   pull_request_sub = "repo:${var.github_owner}/${var.github_repo}:pull_request"
+
+  tofu_state_bucket_arn    = "arn:aws:s3:::${var.tofu_state_bucket_name}"
+  tofu_state_object_arn    = "arn:aws:s3:::${var.tofu_state_bucket_name}/${var.tofu_state_key}"
+  tofu_lockfile_key        = "${var.tofu_state_key}.tflock"
+  tofu_lockfile_object_arn = "arn:aws:s3:::${var.tofu_state_bucket_name}/${local.tofu_lockfile_key}"
 }
 
 data "aws_iam_policy_document" "docker_push_trust" {
@@ -121,6 +126,36 @@ data "aws_iam_policy_document" "tofu_plan_permissions" {
     ]
     resources = ["*"]
   }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [local.tofu_state_bucket_arn]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+    ]
+    resources = [
+      local.tofu_state_object_arn,
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      local.tofu_lockfile_object_arn,
+    ]
+  }
 }
 
 resource "aws_iam_role_policy" "tofu_plan" {
@@ -197,6 +232,37 @@ data "aws_iam_policy_document" "tofu_apply_permissions" {
       "sts:GetCallerIdentity",
     ]
     resources = ["*"]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:ListBucket",
+    ]
+    resources = [local.tofu_state_bucket_arn]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+    ]
+    resources = [
+      local.tofu_state_object_arn,
+    ]
+  }
+
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      local.tofu_lockfile_object_arn,
+    ]
   }
 }
 

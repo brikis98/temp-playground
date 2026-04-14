@@ -46,6 +46,8 @@ module "github_actions_oidc_iam" {
   github_repo                 = "temp-playground"
   create_github_oidc_provider = true
   ecr_repository_arn          = aws_ecr_repository.sample_app.arn
+  tofu_state_bucket_name      = local.tofu_state_bucket
+  tofu_state_key              = local.tofu_state_key
 }
 
 # To use load balancing with EKS in Auto Mode, you have to add tags to subnets that the load balancers can be deployed
