@@ -9,4 +9,4 @@ patches:
 images:
   - name: bizcloud-ai
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
-    newTag: 86b29ff8de38b4ecae31676221664de66f28ed19
+    newTag: v2
