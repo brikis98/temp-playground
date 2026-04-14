@@ -19,8 +19,16 @@ module "eks_cluster_add_ons" {
 
   enable_argocd                                   = true
   enable_argocd_cluster_access_policy_association = true
-  argocd_rbac_role_mapping                        = var.argocd_rbac_role_mapping
   aws_identity_center_arn                         = tolist(data.aws_ssoadmin_instances.current.arns)[0]
+  argocd_rbac_role_mapping = [
+    {
+      role = "ADMIN"
+      identity = {
+        type = "SSO_USER"
+        id   = "f18b8510-80d1-7024-dea5-e1a4682939be"
+      }
+    }
+  ]
 
   depends_on = [module.eks_cluster]
 }
