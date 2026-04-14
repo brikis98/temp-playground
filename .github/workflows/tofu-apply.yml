@@ -41,6 +41,14 @@ jobs:
           tofu init -no-color -input=false
           tofu apply -no-color -input=false -lock-timeout=60m -auto-approve
 
+      - name: Extract summary
+        id: summary
+        env:
+          TOFU_OUTPUT=${{ steps.apply.outputs.stdout }}
+        run: |
+          summary=$(grep -E -m1 '^Apply complete!' <<<"$TOFU_OUTPUT" || grep -E -m1 '^Plan: '  <<<"$TOFU_OUTPUT" || grep -E -m1 '^No changes\.'  <<<"$TOFU_OUTPUT")
+          echo "text=$summary" >> "$GITHUB_OUTPUT"
+
       - uses: jwalton/gh-find-current-pr@master
         id: find_pr
         with:
@@ -57,6 +65,7 @@ jobs:
             Commit: `${{ github.sha }}`
             Directory: `${{ env.TOFU_DIR }}`
             Result: ${{ steps.apply.outcome == 'success' && '✅ Successfully ran apply' || '❌ Error running apply' }}
+            Summary: ${{ steps.summary.outputs.text }}
 
             <details>
 

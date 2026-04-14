@@ -39,6 +39,14 @@ jobs:
           tofu init -no-color -input=false
           tofu plan -no-color -input=false
 
+      - name: Extract summary
+        id: summary
+        env:
+          TOFU_OUTPUT=${{ steps.plan.outputs.stdout }}
+        run: |
+          summary=$(grep -E -m1 '^Apply complete!' <<<"$TOFU_OUTPUT" || grep -E -m1 '^Plan: '  <<<"$TOFU_OUTPUT" || grep -E -m1 '^No changes\.'  <<<"$TOFU_OUTPUT")
+          echo "text=$summary" >> "$GITHUB_OUTPUT"
+
       - name: Find existing plan comment
         if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         id: find-plan-comment
@@ -62,6 +70,7 @@ jobs:
             Commit: `${{ github.sha }}`
             Directory: `${{ env.TOFU_DIR }}`
             Result: ${{ steps.plan.outcome == 'success' && '✅ Plan ran successfully' || '❌ Problem running plan' }}
+            Summary: ${{ steps.summary.outputs.text }}
 
             <details>
 
