@@ -17,6 +17,18 @@ variable "enable_external_dns" {
   default     = false
 }
 
+variable "enable_cloudwatch_observability" {
+  description = "Set to true to install the Amazon CloudWatch Observability EKS add-on for infrastructure and application telemetry."
+  type        = bool
+  default     = false
+}
+
+variable "cloudwatch_observability_addon_version" {
+  description = "Specific CloudWatch Observability EKS add-on version to install. If null, installs latest compatible version."
+  type        = string
+  default     = null
+}
+
 variable "external_dns_addon_version" {
   description = "Specific ExternalDNS EKS add-on version to install. If null, installs latest compatible version."
   type        = string

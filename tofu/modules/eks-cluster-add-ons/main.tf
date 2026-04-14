@@ -10,6 +10,14 @@ data "aws_eks_addon_version" "external_dns" {
   most_recent        = true
 }
 
+data "aws_eks_addon_version" "cloudwatch_observability" {
+  count = var.enable_cloudwatch_observability && var.cloudwatch_observability_addon_version == null ? 1 : 0
+
+  addon_name         = "amazon-cloudwatch-observability"
+  kubernetes_version = data.aws_eks_cluster.cluster.version
+  most_recent        = true
+}
+
 resource "aws_eks_addon" "external_dns" {
   count = var.enable_external_dns ? 1 : 0
 
@@ -18,6 +26,20 @@ resource "aws_eks_addon" "external_dns" {
   addon_version = coalesce(
     var.external_dns_addon_version,
     data.aws_eks_addon_version.external_dns[0].version,
+  )
+
+  resolve_conflicts_on_create = "OVERWRITE"
+  resolve_conflicts_on_update = "OVERWRITE"
+}
+
+resource "aws_eks_addon" "cloudwatch_observability" {
+  count = var.enable_cloudwatch_observability ? 1 : 0
+
+  cluster_name = var.cluster_name
+  addon_name   = "amazon-cloudwatch-observability"
+  addon_version = coalesce(
+    var.cloudwatch_observability_addon_version,
+    data.aws_eks_addon_version.cloudwatch_observability[0].version,
   )
 
   resolve_conflicts_on_create = "OVERWRITE"

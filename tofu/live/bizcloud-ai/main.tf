@@ -15,6 +15,8 @@ module "eks_cluster_add_ons" {
 
   cluster_name = module.eks_cluster.cluster_name
 
+  enable_cloudwatch_observability = true
+
   enable_external_dns = true
 
   enable_argocd                                   = true
@@ -25,12 +27,19 @@ module "eks_cluster_add_ons" {
       role = "ADMIN"
       identity = {
         type = "SSO_USER"
-        id   = "f18b8510-80d1-7024-dea5-e1a4682939be"
+        id   = local.jim_sso_user_id
       }
     }
   ]
 
   depends_on = [module.eks_cluster]
+}
+
+module "managed_grafana" {
+  source = "../../modules/managed-grafana"
+
+  name           = "jim-testing-observability"
+  admin_user_ids = [local.jim_sso_user_id]
 }
 
 resource "aws_ecr_repository" "sample_app" {
@@ -79,3 +88,7 @@ data "aws_subnets" "default" {
 }
 
 data "aws_ssoadmin_instances" "current" {}
+
+locals {
+  jim_sso_user_id = "f18b8510-80d1-7024-dea5-e1a4682939be"
+}
