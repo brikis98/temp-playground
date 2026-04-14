@@ -1,0 +1,27 @@
+name: App Test
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'app/**'
+
+permissions:
+  contents: read
+
+env:
+  IMAGE_TAG: ${{ github.sha }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Build Docker image (test target)
+        run: docker build --target test -t bizcloud-ai:test-${IMAGE_TAG} app
+
+      - name: Run tests in Docker
+        run: docker run --rm bizcloud-ai:test-${IMAGE_TAG}
