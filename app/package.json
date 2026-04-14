@@ -11,6 +11,8 @@
   "author": "Yevgeniy Brikman",
   "license": "MIT",
   "dependencies": {
+    "@aws/aws-distro-opentelemetry-node-autoinstrumentation": "^0.10.0",
+    "@opentelemetry/instrumentation": "^0.214.0",
     "ejs": "^5.0.1",
     "express": "^5.2.1"
   },
