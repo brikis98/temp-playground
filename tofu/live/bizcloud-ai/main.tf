@@ -33,6 +33,10 @@ resource "aws_ecr_repository" "sample_app" {
   image_scanning_configuration {
     scan_on_push = true
   }
+
+  tags = {
+    test = "pr-test-1"
+  }
 }
 
 module "github_actions_oidc_iam" {
