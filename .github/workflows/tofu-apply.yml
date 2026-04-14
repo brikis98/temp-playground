@@ -44,7 +44,7 @@ jobs:
       - name: Extract summary
         id: summary
         env:
-          TOFU_OUTPUT=${{ steps.apply.outputs.stdout }}
+          TOFU_OUTPUT: ${{ steps.apply.outputs.stdout }}
         run: |
           summary=$(grep -E -m1 '^Apply complete!' <<<"$TOFU_OUTPUT" || grep -E -m1 '^Plan: '  <<<"$TOFU_OUTPUT" || grep -E -m1 '^No changes\.'  <<<"$TOFU_OUTPUT")
           echo "text=$summary" >> "$GITHUB_OUTPUT"
