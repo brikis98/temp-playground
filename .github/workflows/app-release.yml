@@ -54,6 +54,12 @@ jobs:
           cd kubernetes/overlays/eks-alb
           kustomize edit set image bizcloud-ai="${ECR_REPO}:${IMAGE_TAG}"
 
+      # kustomize re-indents YAML files to a format yamllint doesn't like, so we use yq to fix the formatting
+      - name: Reformat kustomization.yaml with yq
+        uses: mikefarah/yq@v4.47.2
+        with:
+          cmd: yq -P -i '.' kubernetes/overlays/eks-alb/kustomization.yaml
+
       # We do commits from the standard username and email of the GitHub Actions bot:
       # https://github.com/orgs/community/discussions/26560
       - name: Commit and push YAML update
