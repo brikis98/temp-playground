@@ -1,0 +1,74 @@
+name: Tofu Plan
+
+on:
+  pull_request:
+    paths:
+      - 'tofu/live/bizcloud-ai/**'
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  AWS_REGION: us-east-2
+  TOFU_PLAN_ROLE_ARN: "arn:aws:iam::168852252849:role/github-actions-tofu-plan"
+  TOFU_DIR: tofu/live/bizcloud-ai
+
+jobs:
+  plan-on-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup OpenTofu
+        uses: opentofu/setup-opentofu@v2
+
+      - name: Configure AWS credentials for plan (OIDC)
+        uses: aws-actions/configure-aws-credentials@v6
+        with:
+          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ env.TOFU_PLAN_ROLE_ARN }}
+
+      - name: Run tofu plan
+        id: plan
+        working-directory: ${{ env.TOFU_DIR }}
+        run: |
+          set -euo pipefail
+          tofu init -no-color -input=false
+          tofu plan -no-color -input=false
+
+      - name: Find existing plan comment
+        if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+        id: find-plan-comment
+        uses: peter-evans/find-comment@v3
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: '<!-- tofu-live-plan-comment -->'
+
+      - name: Create or update PR plan comment
+        if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-id: ${{ steps.find-plan-comment.outputs.comment-id }}
+          edit-mode: replace
+          body: |
+            <!-- tofu-live-plan-comment -->
+            ## OpenTofu Plan
+
+            Commit: `${{ github.sha }}`
+            Directory: `${{ env.TOFU_DIR }}`
+            Result: ${{ steps.plan.outcome == 'success' && '✅ Plan ran successfully' || '❌ Problem running plan' }}
+
+            <details>
+
+            <summary>Click to see the full plan output</summary>
+
+            ```hcl
+            ${{ steps.plan.outputs.stdout }}
+            ```
+
+            </details>

@@ -19,8 +19,16 @@ module "eks_cluster_add_ons" {
 
   enable_argocd                                   = true
   enable_argocd_cluster_access_policy_association = true
-  argocd_rbac_role_mapping                        = var.argocd_rbac_role_mapping
   aws_identity_center_arn                         = tolist(data.aws_ssoadmin_instances.current.arns)[0]
+  argocd_rbac_role_mapping = [
+    {
+      role = "ADMIN"
+      identity = {
+        type = "SSO_USER"
+        id   = "f18b8510-80d1-7024-dea5-e1a4682939be"
+      }
+    }
+  ]
 
   depends_on = [module.eks_cluster]
 }
@@ -33,6 +41,10 @@ resource "aws_ecr_repository" "sample_app" {
   image_scanning_configuration {
     scan_on_push = true
   }
+
+  tags = {
+    test = "pr-test-2"
+  }
 }
 
 module "github_actions_oidc_iam" {
@@ -42,6 +54,8 @@ module "github_actions_oidc_iam" {
   github_repo                 = "temp-playground"
   create_github_oidc_provider = true
   ecr_repository_arn          = aws_ecr_repository.sample_app.arn
+  tofu_state_bucket_name      = local.tofu_state_bucket
+  tofu_state_key              = local.tofu_state_key
 }
 
 # To use load balancing with EKS in Auto Mode, you have to add tags to subnets that the load balancers can be deployed
