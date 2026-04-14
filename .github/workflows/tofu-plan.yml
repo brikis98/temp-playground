@@ -8,8 +8,7 @@ on:
 permissions:
   contents: read
   id-token: write
-  issues: write
-  pull-requests: read
+  pull-requests: write
 
 env:
   AWS_REGION: us-east-2
@@ -41,6 +40,7 @@ jobs:
           tofu plan -no-color -input=false
 
       - name: Find existing plan comment
+        if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         id: find-plan-comment
         uses: peter-evans/find-comment@v3
         with:
@@ -49,6 +49,7 @@ jobs:
           body-includes: '<!-- tofu-live-plan-comment -->'
 
       - name: Create or update PR plan comment
+        if: github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]'
         uses: peter-evans/create-or-update-comment@v4
         with:
           issue-number: ${{ github.event.pull_request.number }}
