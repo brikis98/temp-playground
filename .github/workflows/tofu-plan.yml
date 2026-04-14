@@ -1,12 +1,7 @@
-name: Tofu Live Plan And Apply
+name: Tofu Plan
 
 on:
   pull_request:
-    paths:
-      - 'tofu/live/bizcloud-ai/**'
-  push:
-    branches:
-      - main
     paths:
       - 'tofu/live/bizcloud-ai/**'
 
@@ -18,13 +13,12 @@ permissions:
 
 env:
   AWS_REGION: us-east-2
-  TOFU_PLAN_ROLE_ARN: TODO
-  TOFU_APPLY_ROLE_ARN: TODO
+  TOFU_PLAN_ROLE_ARN: "arn:aws:iam::168852252849:role/github-actions-tofu-plan"
+  TOFU_DIR: tofu/live/bizcloud-ai
 
 jobs:
   plan-on-pr:
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -40,7 +34,7 @@ jobs:
 
       - name: Run tofu plan
         id: plan
-        working-directory: tofu/live/bizcloud-ai
+        working-directory: ${{ env.TOFU_DIR }}
         run: |
           set -euo pipefail
           tofu init -no-color -input=false
@@ -70,49 +64,4 @@ jobs:
 
             ```text
             ${{ steps.plan.outputs.stdout }}
-            ```
-
-  apply-on-main:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Setup OpenTofu
-        uses: opentofu/setup-opentofu@v2
-
-      - name: Configure AWS credentials for apply (OIDC)
-        uses: aws-actions/configure-aws-credentials@v6
-        with:
-          aws-region: ${{ env.AWS_REGION }}
-          role-to-assume: ${{ env.TOFU_APPLY_ROLE_ARN }}
-
-      - name: Run tofu apply
-        id: apply
-        working-directory: tofu/live/bizcloud-ai
-        run: |
-          set -euo pipefail
-          tofu init -no-color -input=false
-          tofu apply -no-color -input=false -lock-timeout=60m -auto-approve
-
-      - uses: jwalton/gh-find-current-pr@master
-        id: find_pr
-        with:
-          state: all
-
-      - name: Create PR apply comment
-        if: steps.find_pr.outputs.number
-        uses: peter-evans/create-or-update-comment@v4
-        with:
-          issue-number: ${{ steps.find_pr.outputs.number }}
-          body: |
-            ## OpenTofu Apply
-
-            Commit: `${{ github.sha }}`
-            Directory: `${{ env.TOFU_DIR }}`
-            Result: `${{ steps.apply.outcome == 'success' && '✅' || '⚠️' }}`
-
-            ```text
-            ${{ steps.apply.outputs.stdout }}
             ```
