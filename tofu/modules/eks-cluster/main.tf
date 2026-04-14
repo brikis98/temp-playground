@@ -41,6 +41,7 @@ resource "aws_eks_cluster" "cluster" {
     aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodeMinimalPolicy,
     aws_iam_role_policy_attachment.node_AmazonEC2ContainerRegistryPullOnly,
     aws_iam_role_policy_attachment.node_CloudWatchAgentServerPolicy,
+    aws_iam_role_policy_attachment.node_AWSXrayWriteOnlyAccess,
   ]
 }
 
@@ -116,4 +117,9 @@ resource "aws_iam_role_policy_attachment" "node_AmazonEC2ContainerRegistryPullOn
 resource "aws_iam_role_policy_attachment" "node_CloudWatchAgentServerPolicy" {
   role       = aws_iam_role.node.name
   policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
+resource "aws_iam_role_policy_attachment" "node_AWSXrayWriteOnlyAccess" {
+  role       = aws_iam_role.node.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess"
 }
