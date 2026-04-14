@@ -56,7 +56,7 @@ jobs:
 
             Commit: `${{ github.sha }}`
             Directory: `${{ env.TOFU_DIR }}`
-            Result: ${{ steps.apply.outcome == 'success' && '✅ Successfully ran apply' || '❌ Error running apply' }}`
+            Result: ${{ steps.apply.outcome == 'success' && '✅ Successfully ran apply' || '❌ Error running apply' }}
 
             <details>
 
