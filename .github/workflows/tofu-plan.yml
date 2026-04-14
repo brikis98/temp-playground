@@ -61,8 +61,14 @@ jobs:
 
             Commit: `${{ github.sha }}`
             Directory: `${{ env.TOFU_DIR }}`
-            Result: `${{ steps.plan.outcome == 'success' && '✅' || '⚠️' }}`
+            Result: ${{ steps.plan.outcome == 'success' && '✅ Plan ran successfully' || '❌ Problem running plan' }}
 
-            ```text
+            <details>
+
+            <summary>Click to see the full plan output</summary>
+
+            ```hcl
             ${{ steps.plan.outputs.stdout }}
             ```
+
+            </details>
