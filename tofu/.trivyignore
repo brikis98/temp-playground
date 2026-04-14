@@ -4,3 +4,6 @@ AWS-0041
 
 # Temporarily ignore errors about encryption in the EKS cluster. We'll enable encryption in the security chapter
 AWS-0039
+
+# Ignore errors about using a custom KMS key to encrypt Tofu state
+AWS-0132
