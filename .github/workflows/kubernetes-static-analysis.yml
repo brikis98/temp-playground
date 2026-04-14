@@ -6,7 +6,7 @@ on:
       - 'kubernetes/**'
   push:
     branches:
-      - '**'
+      - 'main'
     paths:
       - 'kubernetes/**'
 

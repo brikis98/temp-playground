@@ -6,7 +6,7 @@ on:
       - 'tofu/**'
   push:
     branches:
-      - '**'
+      - 'main'
     paths:
       - 'tofu/**'
 

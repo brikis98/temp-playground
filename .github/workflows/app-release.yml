@@ -1,11 +1,11 @@
-name: Docker Test And Release
+name: App Release
 
 on:
-  push:
-    branches:
-      - '**'
-    paths:
-      - 'app/**'
+  workflow_run:
+    workflows:
+      - App Test
+    types:
+      - completed
 
 permissions:
   contents: write
@@ -14,31 +14,23 @@ permissions:
 env:
   AWS_REGION: us-east-2
   ECR_REPO: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
-  AWS_ROLE_TO_ASSUME: TODO
-  IMAGE_TAG: ${{ github.sha }}
+  AWS_ROLE_TO_ASSUME: "arn:aws:iam::168852252849:role/github-actions-docker-push"
+  IMAGE_TAG: ${{ github.event.workflow_run.head_sha }}
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
-      - name: Build Docker image (test target)
-        run: docker build --target test -t bizcloud-ai:test-${IMAGE_TAG} app
-
-      - name: Run tests in Docker
-        run: docker run --rm bizcloud-ai:test-${IMAGE_TAG}
-
   publish-main:
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && github.actor != 'github-actions[bot]'
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_branch == 'main' &&
+      github.event.workflow_run.actor.login != 'github-actions[bot]'
     steps:
       - name: Checkout
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v6
