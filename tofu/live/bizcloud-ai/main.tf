@@ -122,5 +122,5 @@ resource "aws_grafana_workspace_service_account_token" "dashboard_provisioner" {
   workspace_id       = module.managed_grafana.workspace_id
   service_account_id = aws_grafana_workspace_service_account.dashboard_provisioner.service_account_id
   name               = "${module.managed_grafana.workspace_name}-dashboard-provisioner-token"
-  seconds_to_live    = 3600 # 1 hour
+  seconds_to_live    = 2592000 # 30 days
 }
