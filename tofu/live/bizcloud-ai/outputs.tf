@@ -48,6 +48,11 @@ output "grafana_workspace_role_arn" {
   value       = module.managed_grafana.workspace_role_arn
 }
 
+output "grafana_default_dashboard_uid" {
+  description = "UID of the default provisioned app dashboard."
+  value       = module.grafana_dashboard.dashboard_uid
+}
+
 output "ecr_repo_url" {
   description = "URL of the ECR repo"
   value       = aws_ecr_repository.sample_app.repository_url

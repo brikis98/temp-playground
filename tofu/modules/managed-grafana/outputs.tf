@@ -3,6 +3,11 @@ output "workspace_id" {
   value       = aws_grafana_workspace.this.id
 }
 
+output "workspace_name" {
+  description = "Name of the Amazon Managed Grafana workspace."
+  value       = aws_grafana_workspace.this.name
+}
+
 output "workspace_arn" {
   description = "ARN of the Amazon Managed Grafana workspace."
   value       = aws_grafana_workspace.this.arn

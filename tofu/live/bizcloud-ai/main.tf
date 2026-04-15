@@ -1,5 +1,10 @@
 provider "aws" {
-  region = "us-east-2"
+  region = local.aws_region
+}
+
+provider "grafana" {
+  url  = module.managed_grafana.workspace_endpoint
+  auth = aws_grafana_workspace_service_account_token.dashboard_provisioner.key
 }
 
 module "eks_cluster" {
@@ -40,6 +45,19 @@ module "managed_grafana" {
 
   name           = "jim-testing-observability"
   admin_user_ids = [local.jim_sso_user_id]
+}
+
+module "grafana_dashboard" {
+  source = "../../modules/grafana-dashboard"
+
+  dashboard_uid    = "bizcloud-ai-overview"
+  dashboard_title  = "BizCloud AI Overview"
+  dashboard_region = local.aws_region
+  cluster_name     = module.eks_cluster.cluster_name
+  namespace        = "default"
+  app_name         = "bizcloud-ai"
+
+  depends_on = [module.managed_grafana]
 }
 
 resource "aws_ecr_repository" "sample_app" {
@@ -91,4 +109,18 @@ data "aws_ssoadmin_instances" "current" {}
 
 locals {
   jim_sso_user_id = "f18b8510-80d1-7024-dea5-e1a4682939be"
+  aws_region      = "us-east-2"
+}
+
+resource "aws_grafana_workspace_service_account" "dashboard_provisioner" {
+  workspace_id = module.managed_grafana.workspace_id
+  name         = "${module.managed_grafana.workspace_name}-dashboard-provisioner"
+  grafana_role = "ADMIN"
+}
+
+resource "aws_grafana_workspace_service_account_token" "dashboard_provisioner" {
+  workspace_id       = module.managed_grafana.workspace_id
+  service_account_id = aws_grafana_workspace_service_account.dashboard_provisioner.service_account_id
+  name               = "${module.managed_grafana.workspace_name}-dashboard-provisioner-token"
+  seconds_to_live    = 3600 # 1 hour
 }
