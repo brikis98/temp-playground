@@ -39,13 +39,13 @@ locals {
   explore_logs_query = urlencode(jsonencode({
     datasource = "CloudWatch"
     queries = [{
-      queryMode = "Logs"
-      region    = var.dashboard_region
-      logGroups = [{
-        name = local.app_log_group_name
-      }]
-      queryLanguage = "CWLI"
-      expression    = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | sort @timestamp desc | limit 200"
+      queryMode        = "Logs"
+      metricEditorMode = 0
+      metricQueryType  = 0
+      region           = var.dashboard_region
+      logGroups        = local.app_log_groups
+      queryLanguage    = "CWLI"
+      expression       = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | sort @timestamp desc | limit 200"
     }]
     range = {
       from = "now-1h"
