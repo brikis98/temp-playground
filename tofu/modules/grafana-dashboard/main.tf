@@ -255,7 +255,18 @@ locals {
           region           = var.dashboard_region
           logGroups        = local.app_log_groups
           queryLanguage    = "CWLI"
-          expression       = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"status\":(?<status>\\d+)/ | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/ | stats count(*) as traffic, pct(duration_ms,95) as latency_p95_ms, sum(if(status >= 500, 1, 0)) as errors_5xx by bin(1m) | sort bin(1m) desc | limit 30"
+          expression       = <<EOT
+fields @timestamp, @message
+| filter @message like /http_request/
+| parse @message /"status":(?<status>\d+)/
+| parse @message /"duration_ms":(?<duration_ms>[0-9.]+)/
+| filter ispresent(status) and ispresent(duration_ms)
+| stats
+    count(*) as traffic,
+    pct(duration_ms, 95) as latency_p95_ms,
+    sum(if(status >= 500, 1, 0)) as errors_5xx
+  by bin(1m)
+EOT
           refId            = "A"
         }]
       }
