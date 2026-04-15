@@ -237,38 +237,6 @@ locals {
           expression       = "fields @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"path\":\"(?<path>[^\"]+)\"/ | parse @message /\"status\":(?<status>\\d+)/ | stats count(*) as requests by path, status | sort path asc, status asc | limit 100"
           refId            = "A"
         }]
-      },
-      {
-        type  = "table"
-        title = "Golden Signals Snapshot"
-        gridPos = {
-          h = 9
-          w = 8
-          x = 16
-          y = 17
-        }
-        datasource = "CloudWatch"
-        targets = [{
-          queryMode        = "Logs"
-          metricEditorMode = 0
-          metricQueryType  = 0
-          region           = var.dashboard_region
-          logGroups        = local.app_log_groups
-          queryLanguage    = "CWLI"
-          expression       = <<EOT
-fields @timestamp, @message
-| filter @message like /http_request/
-| parse @message /"status":(?<status>\d+)/
-| parse @message /"duration_ms":(?<duration_ms>[0-9.]+)/
-| filter ispresent(status) and ispresent(duration_ms)
-| stats
-    count(*) as traffic,
-    pct(duration_ms, 95) as latency_p95_ms,
-    sum(if(status >= 500, 1, 0)) as errors_5xx
-  by bin(1m)
-EOT
-          refId            = "A"
-        }]
       }
     ]
   }
