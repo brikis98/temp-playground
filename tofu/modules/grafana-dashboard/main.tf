@@ -1,11 +1,30 @@
 resource "grafana_dashboard" "app_overview" {
-  config_json = jsonencode(local.dashboard)
+  config_json = jsonencode(merge(local.dashboard, {
+    panels = [
+      for panel in local.dashboard.panels : merge(panel, {
+        datasource = {
+          type = "cloudwatch"
+          uid  = grafana_data_source.cloudwatch.uid
+        }
+      })
+    ]
+  }))
 }
 
 resource "grafana_organization_preferences" "home_dashboard" {
   count = var.set_as_home_dashboard ? 1 : 0
 
   home_dashboard_uid = grafana_dashboard.app_overview.uid
+}
+
+resource "grafana_data_source" "cloudwatch" {
+  type = "cloudwatch"
+  name = "CloudWatch"
+
+  json_data_encoded = jsonencode({
+    authType      = "default"
+    defaultRegion = var.dashboard_region
+  })
 }
 
 locals {
