@@ -130,7 +130,7 @@ locals {
       },
       {
         type  = "timeseries"
-        title = "Node Count (Saturation Proxy)"
+        title = "Node Count"
         gridPos = {
           h = 8
           w = 8
