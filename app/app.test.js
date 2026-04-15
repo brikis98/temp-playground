@@ -7,4 +7,10 @@ describe("Test the app", () => {
     expect(response.statusCode).toBe(200);
     expect(response.text).toContain("Hello, World!");
   });
+
+  test("Get /health should return healthy status", async () => {
+    const response = await request(app).get("/health");
+    expect(response.statusCode).toBe(200);
+    expect(response.body).toEqual({ ok: true });
+  });
 });
