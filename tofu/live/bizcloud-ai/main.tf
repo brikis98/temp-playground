@@ -53,6 +53,7 @@ module "grafana_dashboard" {
   dashboard_uid    = "bizcloud-ai-overview"
   dashboard_title  = "BizCloud AI Overview"
   dashboard_region = local.aws_region
+  account_id       = data.aws_caller_identity.current.account_id
   cluster_name     = module.eks_cluster.cluster_name
   namespace        = "default"
   app_name         = "bizcloud-ai"
@@ -106,6 +107,8 @@ data "aws_subnets" "default" {
 }
 
 data "aws_ssoadmin_instances" "current" {}
+
+data "aws_caller_identity" "current" {}
 
 locals {
   jim_sso_user_id = "f18b8510-80d1-7024-dea5-e1a4682939be"

@@ -7,6 +7,11 @@ variable "dashboard_region" {
   type        = string
 }
 
+variable "account_id" {
+  description = "The ID of the AWS account in which the app is running"
+  type        = string
+}
+
 variable "cluster_name" {
   description = "EKS cluster name used in CloudWatch query dimensions."
   type        = string

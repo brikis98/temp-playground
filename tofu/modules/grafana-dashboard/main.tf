@@ -29,14 +29,23 @@ resource "grafana_data_source" "cloudwatch" {
 
 locals {
   app_log_group_name = "/aws/containerinsights/${var.cluster_name}/application"
+  app_log_group_arn  = "arn:aws:logs:${var.dashboard_region}:${var.account_id}:log-group:${local.app_log_group_name}:*"
+  app_log_groups = [{
+    arn       = local.app_log_group_arn
+    name      = local.app_log_group_name
+    accountId = var.account_id
+  }]
 
   explore_logs_query = urlencode(jsonencode({
     datasource = "CloudWatch"
     queries = [{
-      queryMode     = "Logs"
-      region        = var.dashboard_region
-      logGroupNames = [local.app_log_group_name]
-      queryString   = "fields @timestamp, @message | filter kubernetes.container_name = \"${var.app_name}\" | sort @timestamp desc | limit 200"
+      queryMode = "Logs"
+      region    = var.dashboard_region
+      logGroups = [{
+        name = local.app_log_group_name
+      }]
+      queryLanguage = "CWLI"
+      expression    = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | sort @timestamp desc | limit 200"
     }]
     range = {
       from = "now-1h"
@@ -69,7 +78,7 @@ locals {
     panels = [
       {
         type  = "timeseries"
-        title = "Pod CPU Utilization (%)"
+        title = "Node CPU Utilization (%)"
         gridPos = {
           h = 8
           w = 8
@@ -79,22 +88,23 @@ locals {
         datasource = "CloudWatch"
         targets = [{
           namespace  = "ContainerInsights"
-          metricName = "pod_cpu_utilization"
+          metricName = "node_cpu_utilization"
           dimensions = {
             ClusterName = var.cluster_name
-            Namespace   = var.namespace
-            PodName     = "*"
           }
-          region    = var.dashboard_region
-          period    = "60"
-          stat      = "Average"
-          queryMode = "Metrics"
-          refId     = "A"
+          region           = var.dashboard_region
+          period           = ""
+          statistic        = "Average"
+          matchExact       = true
+          queryMode        = "Metrics"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          refId            = "A"
         }]
       },
       {
         type  = "timeseries"
-        title = "Pod Memory Utilization (%)"
+        title = "Node Memory Utilization (%)"
         gridPos = {
           h = 8
           w = 8
@@ -104,17 +114,18 @@ locals {
         datasource = "CloudWatch"
         targets = [{
           namespace  = "ContainerInsights"
-          metricName = "pod_memory_utilization"
+          metricName = "node_memory_utilization"
           dimensions = {
             ClusterName = var.cluster_name
-            Namespace   = var.namespace
-            PodName     = "*"
           }
-          region    = var.dashboard_region
-          period    = "60"
-          stat      = "Average"
-          queryMode = "Metrics"
-          refId     = "A"
+          region           = var.dashboard_region
+          period           = ""
+          statistic        = "Average"
+          matchExact       = true
+          queryMode        = "Metrics"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          refId            = "A"
         }]
       },
       {
@@ -133,11 +144,14 @@ locals {
           dimensions = {
             ClusterName = var.cluster_name
           }
-          region    = var.dashboard_region
-          period    = "60"
-          stat      = "Average"
-          queryMode = "Metrics"
-          refId     = "A"
+          region           = var.dashboard_region
+          period           = ""
+          statistic        = "Average"
+          matchExact       = true
+          queryMode        = "Metrics"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          refId            = "A"
         }]
       },
       {
@@ -151,11 +165,14 @@ locals {
         }
         datasource = "CloudWatch"
         targets = [{
-          queryMode     = "Logs"
-          region        = var.dashboard_region
-          logGroupNames = [local.app_log_group_name]
-          queryString   = "fields @timestamp, path, status | filter event = \"http_request\" | stats count(*) as requests by bin(1m)"
-          refId         = "A"
+          queryMode        = "Logs"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          region           = var.dashboard_region
+          logGroups        = local.app_log_groups
+          queryLanguage    = "CWLI"
+          expression       = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | stats count(*) as requests by bin(1m)"
+          refId            = "A"
         }]
       },
       {
@@ -169,11 +186,14 @@ locals {
         }
         datasource = "CloudWatch"
         targets = [{
-          queryMode     = "Logs"
-          region        = var.dashboard_region
-          logGroupNames = [local.app_log_group_name]
-          queryString   = "fields @timestamp, path, duration_ms | filter event = \"http_request\" | stats pct(duration_ms,95) as p95_ms by path, bin(1m)"
-          refId         = "A"
+          queryMode        = "Logs"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          region           = var.dashboard_region
+          logGroups        = local.app_log_groups
+          queryLanguage    = "CWLI"
+          expression       = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"path\":\"(?<path>[^\"]+)\"/ | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/ | stats pct(duration_ms,95) as p95_ms by path, bin(1m)"
+          refId            = "A"
         }]
       },
       {
@@ -187,11 +207,14 @@ locals {
         }
         datasource = "CloudWatch"
         targets = [{
-          queryMode     = "Logs"
-          region        = var.dashboard_region
-          logGroupNames = [local.app_log_group_name]
-          queryString   = "fields path | filter event = \"http_request\" | stats count(*) as requests by path | sort requests desc | limit 20"
-          refId         = "A"
+          queryMode        = "Logs"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          region           = var.dashboard_region
+          logGroups        = local.app_log_groups
+          queryLanguage    = "CWLI"
+          expression       = "fields @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"path\":\"(?<path>[^\"]+)\"/ | stats count(*) as requests by path | sort requests desc | limit 20"
+          refId            = "A"
         }]
       },
       {
@@ -205,11 +228,14 @@ locals {
         }
         datasource = "CloudWatch"
         targets = [{
-          queryMode     = "Logs"
-          region        = var.dashboard_region
-          logGroupNames = [local.app_log_group_name]
-          queryString   = "fields path, status | filter event = \"http_request\" | stats count(*) as requests by path, status | sort path asc, status asc | limit 100"
-          refId         = "A"
+          queryMode        = "Logs"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          region           = var.dashboard_region
+          logGroups        = local.app_log_groups
+          queryLanguage    = "CWLI"
+          expression       = "fields @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"path\":\"(?<path>[^\"]+)\"/ | parse @message /\"status\":(?<status>\\d+)/ | stats count(*) as requests by path, status | sort path asc, status asc | limit 100"
+          refId            = "A"
         }]
       },
       {
@@ -223,11 +249,14 @@ locals {
         }
         datasource = "CloudWatch"
         targets = [{
-          queryMode     = "Logs"
-          region        = var.dashboard_region
-          logGroupNames = [local.app_log_group_name]
-          queryString   = "fields @timestamp, status, duration_ms | filter event = \"http_request\" | stats count(*) as traffic, pct(duration_ms,95) as latency_p95_ms, sum(if(status >= 500, 1, 0)) as errors_5xx by bin(1m) | sort bin(1m) desc | limit 30"
-          refId         = "A"
+          queryMode        = "Logs"
+          metricEditorMode = 0
+          metricQueryType  = 0
+          region           = var.dashboard_region
+          logGroups        = local.app_log_groups
+          queryLanguage    = "CWLI"
+          expression       = "fields @timestamp, @message | filter @message like /\"event\":\"http_request\"/ | parse @message /\"status\":(?<status>\\d+)/ | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/ | stats count(*) as traffic, pct(duration_ms,95) as latency_p95_ms, sum(if(status >= 500, 1, 0)) as errors_5xx by bin(1m) | sort bin(1m) desc | limit 30"
+          refId            = "A"
         }]
       }
     ]
