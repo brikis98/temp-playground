@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# This script builds all the Kustomize configurations and then runs Trivy on them. If we don't build the configurations,
-# Trivy analyzes each patch separately, and that leads to false positives.
+# This script builds Kustomize configurations and then runs Trivy on the rendered output.
+# By default, it scans first-party manifests and excludes third-party install bundles.
+# Set INCLUDE_THIRD_PARTY=true to also scan kubernetes/argo-rollouts.
 
 set -euo pipefail
 
@@ -29,7 +30,9 @@ done < <(
       | sed 's|/kustomization.yaml$||' \
       | grep -v '/_shared/'
     echo "kubernetes/argocd"
-    echo "kubernetes/argo-rollouts"
+    if [[ "${INCLUDE_THIRD_PARTY:-false}" == "true" ]]; then
+      echo "kubernetes/argo-rollouts"
+    fi
   } | sort -u
 )
 
