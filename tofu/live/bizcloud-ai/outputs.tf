@@ -62,3 +62,33 @@ output "github_actions_tofu_apply_role_arn" {
   description = "IAM role ARN for tofu apply workflow"
   value       = module.github_actions_oidc_iam.tofu_apply_role_arn
 }
+
+output "cloudwatch_dashboard_name" {
+  description = "Name of the native CloudWatch observability dashboard."
+  value       = module.cloudwatch_observability.dashboard_name
+}
+
+output "cloudwatch_dashboard_url" {
+  description = "AWS Console URL for the native CloudWatch observability dashboard."
+  value       = module.cloudwatch_observability.dashboard_url
+}
+
+output "cloudwatch_application_log_group_name" {
+  description = "Application log group used by CloudWatch Logs Insights query definitions."
+  value       = module.cloudwatch_observability.application_log_group_name
+}
+
+output "cloudwatch_recent_requests_query_id" {
+  description = "CloudWatch query definition ID for recent frontend/backend requests."
+  value       = module.cloudwatch_observability.recent_requests_query_id
+}
+
+output "cloudwatch_latency_by_route_query_id" {
+  description = "CloudWatch query definition ID for latency percentiles by route."
+  value       = module.cloudwatch_observability.latency_by_route_query_id
+}
+
+output "cloudwatch_errors_query_id" {
+  description = "CloudWatch query definition ID for request errors."
+  value       = module.cloudwatch_observability.errors_query_id
+}
