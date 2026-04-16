@@ -28,31 +28,6 @@ output "cloudwatch_observability_addon_arn" {
   value       = module.eks_cluster_add_ons.cloudwatch_observability_addon_arn
 }
 
-output "grafana_workspace_id" {
-  description = "ID of the Amazon Managed Grafana workspace."
-  value       = module.managed_grafana.workspace_id
-}
-
-output "grafana_workspace_arn" {
-  description = "ARN of the Amazon Managed Grafana workspace."
-  value       = module.managed_grafana.workspace_arn
-}
-
-output "grafana_workspace_endpoint" {
-  description = "Endpoint URL of the Amazon Managed Grafana workspace."
-  value       = module.managed_grafana.workspace_endpoint
-}
-
-output "grafana_workspace_role_arn" {
-  description = "IAM role ARN used by the Amazon Managed Grafana workspace."
-  value       = module.managed_grafana.workspace_role_arn
-}
-
-output "grafana_default_dashboard_uid" {
-  description = "UID of the default provisioned app dashboard."
-  value       = module.grafana_dashboard.dashboard_uid
-}
-
 output "ecr_repo_url" {
   description = "URL of the ECR repo"
   value       = aws_ecr_repository.sample_app.repository_url
