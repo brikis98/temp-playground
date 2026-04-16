@@ -6,6 +6,10 @@ patches:
   - target:
       kind: Deployment
       name: app
+    path: deployment-env-patch.yaml
+  - target:
+      kind: Deployment
+      name: app
     path: deployment-patch.yaml
   - target:
       kind: Service
