@@ -11,7 +11,3 @@ patches:
       kind: Service
       name: app
     path: service-patch.yaml
-images:
-  - name: app
-    newName: bizcloud-backend
-    newTag: prod
