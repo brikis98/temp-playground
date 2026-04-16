@@ -28,9 +28,19 @@ output "cloudwatch_observability_addon_arn" {
   value       = module.eks_cluster_add_ons.cloudwatch_observability_addon_arn
 }
 
-output "ecr_repo_url" {
-  description = "URL of the ECR repo"
-  value       = aws_ecr_repository.sample_app.repository_url
+output "bizcloud_ai_ecr_repo_url" {
+  description = "URL of the bizcloud-ai ECR repo"
+  value       = aws_ecr_repository.bizcloud_ai.repository_url
+}
+
+output "bizcloud_frontend_ecr_repo_url" {
+  description = "URL of the bizcloud-frontend ECR repo"
+  value       = aws_ecr_repository.bizcloud_frontend.repository_url
+}
+
+output "bizcloud_backend_ecr_repo_url" {
+  description = "URL of the bizcloud-backend ECR repo"
+  value       = aws_ecr_repository.bizcloud_backend.repository_url
 }
 
 output "github_oidc_provider_arn" {

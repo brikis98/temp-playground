@@ -12,9 +12,9 @@ variable "github_repo" {
   type        = string
 }
 
-variable "ecr_repository_arn" {
-  description = "ARN of the ECR repository to allow Docker image pushes to."
-  type        = string
+variable "ecr_repository_arns" {
+  description = "ARNs of the ECR repositories to allow Docker image pushes to."
+  type        = list(string)
 }
 
 variable "tofu_state_bucket_name" {

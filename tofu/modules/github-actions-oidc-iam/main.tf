@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "docker_push_permissions" {
       "ecr:PutImage",
       "ecr:UploadLayerPart",
     ]
-    resources = [var.ecr_repository_arn]
+    resources = var.ecr_repository_arns
   }
 }
 

@@ -35,7 +35,7 @@ module "eks_cluster_add_ons" {
   depends_on = [module.eks_cluster]
 }
 
-resource "aws_ecr_repository" "sample_app" {
+resource "aws_ecr_repository" "bizcloud_ai" {
   name                 = "bizcloud-ai"
   image_tag_mutability = "IMMUTABLE"
   force_delete         = true
@@ -43,9 +43,25 @@ resource "aws_ecr_repository" "sample_app" {
   image_scanning_configuration {
     scan_on_push = true
   }
+}
 
-  tags = {
-    test = "pr-test-4"
+resource "aws_ecr_repository" "bizcloud_frontend" {
+  name                 = "bizcloud-frontend"
+  image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
+  }
+}
+
+resource "aws_ecr_repository" "bizcloud_backend" {
+  name                 = "bizcloud-backend"
+  image_tag_mutability = "IMMUTABLE"
+  force_delete         = true
+
+  image_scanning_configuration {
+    scan_on_push = true
   }
 }
 
@@ -55,9 +71,13 @@ module "github_actions_oidc_iam" {
   github_owner                = "brikis98"
   github_repo                 = "temp-playground"
   create_github_oidc_provider = true
-  ecr_repository_arn          = aws_ecr_repository.sample_app.arn
-  tofu_state_bucket_name      = local.tofu_state_bucket
-  tofu_state_key              = local.tofu_state_key
+  ecr_repository_arns = [
+    aws_ecr_repository.bizcloud_ai.arn,
+    aws_ecr_repository.bizcloud_frontend.arn,
+    aws_ecr_repository.bizcloud_backend.arn,
+  ]
+  tofu_state_bucket_name = local.tofu_state_bucket
+  tofu_state_key         = local.tofu_state_key
 }
 
 # To use load balancing with EKS in Auto Mode, you have to add tags to subnets that the load balancers can be deployed
