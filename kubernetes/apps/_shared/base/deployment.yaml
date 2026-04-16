@@ -41,7 +41,7 @@ spec:
             - name: OTEL_EXPORTER_OTLP_METRICS_ENDPOINT
               value: http://cloudwatch-agent.amazon-cloudwatch:4316/v1/metrics
             - name: OTEL_PROPAGATORS
-              value: tracecontext,baggage,b3,xray-lambda
+              value: tracecontext,baggage,b3,xray
             - name: NODE_OPTIONS
               value: --import @aws/aws-distro-opentelemetry-node-autoinstrumentation/register
             - name: NAMESPACE
