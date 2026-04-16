@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - ../../base
 images:
-  - name: bizcloud-backend
+  - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-backend
     newTag: v1

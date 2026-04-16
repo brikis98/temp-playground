@@ -10,6 +10,6 @@ patches:
   - path: service-clusterip-patch.yaml
   - path: deployment-delete.yaml
 images:
-  - name: bizcloud-frontend
+  - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-frontend
     newTag: v2

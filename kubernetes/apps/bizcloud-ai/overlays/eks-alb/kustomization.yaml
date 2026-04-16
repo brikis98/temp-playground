@@ -7,6 +7,6 @@ resources:
 patches:
   - path: service-clusterip-patch.yaml
 images:
-  - name: bizcloud-ai
+  - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
-    newTag: v2
+    newTag: v1

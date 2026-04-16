@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: bizcloud-ai
-          image: bizcloud-ai:prod
+          image: app:prod
           securityContext:
             allowPrivilegeEscalation: false
             capabilities:

@@ -21,7 +21,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: bizcloud-frontend
-          image: bizcloud-frontend:prod
+          image: app:prod
           env:
             - name: BACKEND_BASE_URL
               value: http://bizcloud-backend

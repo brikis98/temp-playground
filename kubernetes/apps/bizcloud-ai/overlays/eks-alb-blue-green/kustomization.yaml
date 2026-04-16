@@ -10,6 +10,6 @@ patches:
   - path: service-clusterip-patch.yaml
   - path: deployment-delete.yaml
 images:
-  - name: bizcloud-ai
+  - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
     newTag: v2
