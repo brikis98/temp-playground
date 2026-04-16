@@ -43,7 +43,7 @@ jobs:
 
       - name: Build and push Docker image (prod target)
         run: |
-          docker build --target prod -t "${ECR_REPO}:${IMAGE_TAG}" app
+          docker build --target prod -t "${ECR_REPO}:${IMAGE_TAG}" apps/bizcloud-ai
           docker push "${ECR_REPO}:${IMAGE_TAG}"
 
       - name: Setup Kustomize
@@ -51,14 +51,14 @@ jobs:
 
       - name: Update Kubernetes deployment image tag
         run: |
-          cd kubernetes/overlays/eks-alb
+          cd kubernetes/apps/bizcloud-ai/overlays/eks-alb
           kustomize edit set image bizcloud-ai="${ECR_REPO}:${IMAGE_TAG}"
 
       # kustomize re-indents YAML files to a format yamllint doesn't like, so we use yq to fix the formatting
       - name: Reformat kustomization.yaml with yq
         uses: mikefarah/yq@v4.47.2
         with:
-          cmd: yq -P -i '.' kubernetes/overlays/eks-alb/kustomization.yaml
+          cmd: yq -P -i '.' kubernetes/apps/bizcloud-ai/overlays/eks-alb/kustomization.yaml
 
       # We do commits from the standard username and email of the GitHub Actions bot:
       # https://github.com/orgs/community/discussions/26560
@@ -66,7 +66,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add kubernetes/overlays/eks-alb/kustomization.yaml
+          git add kubernetes/apps/bizcloud-ai/overlays/eks-alb/kustomization.yaml
           if git diff --cached --quiet; then
             echo "No YAML changes to commit."
             exit 0

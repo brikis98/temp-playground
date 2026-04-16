@@ -3,12 +3,12 @@ name: App Static Analysis
 on:
   pull_request:
     paths:
-      - 'app/**'
+      - 'apps/bizcloud-ai/**'
   push:
     branches:
       - 'main'
     paths:
-      - 'app/**'
+      - 'apps/bizcloud-ai/**'
 
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app
+        working-directory: apps/bizcloud-ai
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: apps/bizcloud-ai/package-lock.json
 
       - name: Install dependencies
         run: npm ci
@@ -40,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: app
+        working-directory: apps/bizcloud-ai
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -50,7 +50,7 @@ jobs:
         with:
           node-version: 20
           cache: npm
-          cache-dependency-path: app/package-lock.json
+          cache-dependency-path: apps/bizcloud-ai/package-lock.json
 
       - name: Install dependencies
         run: npm ci

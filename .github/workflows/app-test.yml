@@ -5,7 +5,7 @@ on:
     branches:
       - '**'
     paths:
-      - 'app/**'
+      - 'apps/bizcloud-ai/**'
 
 permissions:
   contents: read
@@ -21,7 +21,7 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Build Docker image (test target)
-        run: docker build --target test -t bizcloud-ai:test-${IMAGE_TAG} app
+        run: docker build --target test -t bizcloud-ai:test-${IMAGE_TAG} apps/bizcloud-ai
 
       - name: Run tests in Docker
         run: docker run --rm bizcloud-ai:test-${IMAGE_TAG}

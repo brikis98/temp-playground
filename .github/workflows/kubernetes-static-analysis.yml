@@ -45,9 +45,9 @@ jobs:
 
       - name: Validate kustomize builds
         run: |
-          kustomize build kubernetes/base >/dev/null
-          kustomize build kubernetes/overlays/docker-desktop >/dev/null
-          kustomize build kubernetes/overlays/eks-alb >/dev/null
+          kustomize build kubernetes/apps/bizcloud-ai/base >/dev/null
+          kustomize build kubernetes/apps/bizcloud-ai/overlays/docker-desktop >/dev/null
+          kustomize build kubernetes/apps/bizcloud-ai/overlays/eks-alb >/dev/null
           kustomize build kubernetes/argocd >/dev/null
 
   trivy:
