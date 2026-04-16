@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+images:
+  - name: bizcloud-backend
+    newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-backend
+    newTag: v1

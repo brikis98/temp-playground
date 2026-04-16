@@ -1,0 +1,9 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../_shared/argocd
+patches:
+  - target:
+      kind: Application
+      name: app
+    path: application-patch.yaml

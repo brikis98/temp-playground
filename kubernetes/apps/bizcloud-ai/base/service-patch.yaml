@@ -1,0 +1,6 @@
+- op: replace
+  path: /metadata/name
+  value: bizcloud-ai
+- op: replace
+  path: /spec/selector/app
+  value: bizcloud-ai

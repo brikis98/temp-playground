@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: bizcloud-backend
+spec:
+  replicas: 2
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: bizcloud-backend
+  template:
+    metadata:
+      labels:
+        app: bizcloud-backend
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: bizcloud-backend
+          image: bizcloud-backend:prod
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          ports:
+            - containerPort: 8081
+  strategy:
+    blueGreen:
+      activeService: bizcloud-backend
+      previewService: bizcloud-backend-preview
+      autoPromotionEnabled: false

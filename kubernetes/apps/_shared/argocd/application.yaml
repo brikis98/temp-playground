@@ -1,20 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bizcloud-ai
+  name: app
   namespace: argocd
 spec:
   project: default
-
   source:
     repoURL: https://github.com/brikis98/temp-playground
     targetRevision: main
-    path: kubernetes/overlays/eks-alb
-
+    path: kubernetes/apps/app/overlays/eks-alb
   destination:
     name: local-cluster
     namespace: default
-
   syncPolicy:
     automated:
       prune: true

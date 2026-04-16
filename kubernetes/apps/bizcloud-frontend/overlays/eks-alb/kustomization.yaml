@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+  - ../../../_shared/overlays/eks-alb
+  - ingress.yaml
+patches:
+  - path: service-clusterip-patch.yaml
+images:
+  - name: bizcloud-frontend
+    newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-frontend
+    newTag: v1

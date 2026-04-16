@@ -1,0 +1,6 @@
+- op: replace
+  path: /metadata/name
+  value: bizcloud-backend
+- op: replace
+  path: /spec/source/path
+  value: kubernetes/apps/bizcloud-backend/overlays/eks-alb

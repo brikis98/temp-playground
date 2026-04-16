@@ -1,0 +1,6 @@
+- op: replace
+  path: /metadata/name
+  value: bizcloud-frontend
+- op: replace
+  path: /spec/selector/app
+  value: bizcloud-frontend
