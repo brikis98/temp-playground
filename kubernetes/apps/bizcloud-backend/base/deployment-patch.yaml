@@ -17,7 +17,7 @@
   path: /spec/template/spec/containers/0/env/1/value
   value: bizcloud-backend
 - op: replace
-  path: /spec/template/spec/containers/0/env/11/value
+  path: /spec/template/spec/containers/0/env/12/value
   value: bizcloud-backend
 - op: replace
   path: /spec/template/spec/containers/0/ports/0/containerPort
