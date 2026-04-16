@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BizCloud AI | Business Corp</title>
+  <style>
+    :root {
+      --paper: #f4f1e9;
+      --ink: #1f2a37;
+      --accent: #005f73;
+      --signal: #ee9b00;
+      --card: #fffef9;
+      --line: #d5cbb9;
+      --muted: #606f7b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 0%, #fff7d8 0, transparent 38%),
+        radial-gradient(circle at 100% 0%, #d9eef2 0, transparent 34%),
+        linear-gradient(180deg, #f8f5ed 0%, #efe7d9 100%);
+      min-height: 100vh;
+    }
+
+    .page {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .nav {
+      border: 2px solid var(--line);
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .brand-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, var(--accent), #0a9396);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+      box-shadow: 0 3px 0 #003845;
+    }
+
+    .brand small {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 1px;
+    }
+
+    .nav-right {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .hero {
+      margin-top: 26px;
+      border: 2px solid var(--line);
+      border-radius: 16px;
+      background: var(--card);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+    }
+
+    .hero-main {
+      padding: 34px;
+    }
+
+    .kicker {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      background: #fff3c4;
+      border: 1px solid #f0d275;
+      border-radius: 999px;
+      padding: 6px 12px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 12px;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.04;
+      letter-spacing: -1px;
+      text-transform: uppercase;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.45;
+      max-width: 36ch;
+    }
+
+    .cta {
+      margin-top: 22px;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 11px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+
+    .btn-primary {
+      color: white;
+      background: var(--accent);
+      box-shadow: 0 4px 0 #023a45;
+    }
+
+    .btn-secondary {
+      color: var(--ink);
+      background: #f5f2ea;
+      border: 1px solid var(--line);
+    }
+
+    .hero-side {
+      padding: 26px;
+      background:
+        repeating-linear-gradient(-45deg, #fff7e6, #fff7e6 16px, #fff1d2 16px, #fff1d2 32px);
+      border-left: 2px solid var(--line);
+      display: grid;
+      align-content: center;
+      gap: 14px;
+    }
+
+    .metric {
+      background: #fff;
+      border: 1px solid #eadfca;
+      border-radius: 10px;
+      padding: 12px;
+      box-shadow: 0 2px 0 #d3c6ae;
+    }
+
+    .metric h3 {
+      margin: 0;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .metric strong {
+      font-size: 1.4rem;
+      display: block;
+      margin-top: 4px;
+    }
+
+    .grid {
+      margin-top: 24px;
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .card {
+      border: 2px solid var(--line);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+      font-size: 0.95rem;
+    }
+
+    .badge {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #532f00;
+      background: #ffd788;
+      border: 1px solid #e8b85a;
+      border-radius: 999px;
+      padding: 5px 9px;
+      text-transform: uppercase;
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: var(--muted);
+      text-align: center;
+      padding-bottom: 12px;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-side {
+        border-left: 0;
+        border-top: 2px solid var(--line);
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <nav class="nav">
+      <div class="brand">
+        <span class="brand-badge">BC</span>
+        <div>
+          BizCloud AI
+          <small>by Business Corp (Est. 1976)</small>
+        </div>
+      </div>
+      <div class="nav-right">Enterprise-ready since last quarter</div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-main">
+        <span class="kicker">Now with 400% more cloud</span>
+        <h1>Legacy Wisdom.<br>AI Speed.</h1>
+        <p>
+          Business Corp proudly brings decades of meeting-heavy excellence into modern SaaS.
+          BizCloud AI automates your workflows, dashboards your dashboards, and puts every deployment
+          behind at least three approvals.
+        </p>
+        <div class="cta">
+          <button class="btn btn-primary">Book A Demo</button>
+          <button class="btn btn-secondary">Download Whitepaper v12</button>
+        </div>
+      </div>
+      <aside class="hero-side">
+        <div class="metric">
+          <h3>Quarterly AI Synergy</h3>
+          <strong><%= metrics.synergy %></strong>
+        </div>
+        <div class="metric">
+          <h3>Mean Time To PowerPoint</h3>
+          <strong><%= metrics.mean_time_to_powerpoint %></strong>
+        </div>
+        <div class="metric">
+          <h3>Cloud Adoption Maturity</h3>
+          <strong><%= metrics.maturity %></strong>
+        </div>
+      </aside>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2>DevOps Control Tower</h2>
+        <p>
+          Monitor CI/CD pipelines with executive-friendly gauges that turn yellow before anything is actually wrong.
+        </p>
+        <span class="badge">ISO-ish Compliant</span>
+      </article>
+      <article class="card">
+        <h2>AI Ticket Summarizer</h2>
+        <p>
+          Converts 87-comment incident threads into one sentence and three action items no one agreed on.
+        </p>
+        <span class="badge">Powered by committee</span>
+      </article>
+      <article class="card">
+        <h2>Cost Optimization Engine</h2>
+        <p>
+          Recommends rightsizing after every outage retrospective, then opens a follow-up task for next fiscal year.
+        </p>
+        <span class="badge">FinOps-ready</span>
+      </article>
+    </section>
+
+    <p class="footer">
+      Hello, World! Business Corp training environment for DevOps classes only.
+    </p>
+  </main>
+</body>
+</html>
