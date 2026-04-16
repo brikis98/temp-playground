@@ -34,7 +34,7 @@ jobs:
           cd kubernetes
           yamllint .
 
-  kustomize:
+  kustomize-and-trivy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -43,21 +43,8 @@ jobs:
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v3
 
-      - name: Validate kustomize builds
-        run: |
-          kustomize build kubernetes/apps/bizcloud-ai/base >/dev/null
-          kustomize build kubernetes/apps/bizcloud-ai/overlays/docker-desktop >/dev/null
-          kustomize build kubernetes/apps/bizcloud-ai/overlays/eks-alb >/dev/null
-          kustomize build kubernetes/argocd >/dev/null
-
-  trivy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-
       - name: Setup Trivy
         uses: aquasecurity/setup-trivy@v0.2.6
 
-      - name: trivy config kubernetes/
-        run: trivy config --severity HIGH,CRITICAL --exit-code 1 kubernetes/
+      - name: Run Kubernetes static analysis
+        run: ./kubernetes/run-static-analysis.sh
