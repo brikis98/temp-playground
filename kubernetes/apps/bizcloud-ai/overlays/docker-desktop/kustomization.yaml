@@ -5,4 +5,4 @@ resources:
 images:
   - name: app
     newName: bizcloud-ai
-    newTag: v1
+    newTag: v2
