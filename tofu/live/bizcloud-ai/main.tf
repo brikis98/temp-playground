@@ -102,8 +102,6 @@ data "aws_subnets" "default" {
 
 data "aws_ssoadmin_instances" "current" {}
 
-data "aws_caller_identity" "current" {}
-
 locals {
   jim_sso_user_id = "f18b8510-80d1-7024-dea5-e1a4682939be"
   aws_region      = "us-east-2"
