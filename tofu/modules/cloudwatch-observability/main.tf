@@ -218,8 +218,8 @@ locals {
         width  = 24
         height = 8
         properties = {
-          title  = "Frontend HTTP Logs"
-          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, @message, kubernetes.container_name | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"${var.frontend_service_name}\\\"/ or kubernetes.container_name = '${var.frontend_service_name}' | parse @message /\\\"service\\\":\\\"(?<service>[^\\\"]+)\\\"/ | parse @message /\\\"method\\\":\\\"(?<method>[^\\\"]+)\\\"/ | parse @message /\\\"route\\\":\\\"(?<route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<path>[^\\\"]+)\\\"/ | parse @message /\\\"status\\\":(?<status>\\d+)/ | parse @message /\\\"duration_ms\\\":(?<duration_ms>[0-9.]+)/ | parse @message /\\\"trace_id\\\":\\\"(?<trace_id>[^\\\"]+)\\\"/ | display @timestamp, service, kubernetes.container_name, method, route, path, status, duration_ms, trace_id, @message | sort @timestamp desc | limit 200"
+          title  = "Frontend Logs"
+          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, kubernetes.container_name, kubernetes.pod_name, @message | filter kubernetes.container_name = '${var.frontend_service_name}' | sort @timestamp desc | limit 200"
           region = var.region
           view   = "table"
         }
@@ -231,8 +231,8 @@ locals {
         width  = 24
         height = 8
         properties = {
-          title  = "Backend HTTP Logs"
-          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, @message, kubernetes.container_name | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"${var.backend_service_name}\\\"/ or kubernetes.container_name = '${var.backend_service_name}' | parse @message /\\\"service\\\":\\\"(?<service>[^\\\"]+)\\\"/ | parse @message /\\\"method\\\":\\\"(?<method>[^\\\"]+)\\\"/ | parse @message /\\\"route\\\":\\\"(?<route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<path>[^\\\"]+)\\\"/ | parse @message /\\\"status\\\":(?<status>\\d+)/ | parse @message /\\\"duration_ms\\\":(?<duration_ms>[0-9.]+)/ | parse @message /\\\"trace_id\\\":\\\"(?<trace_id>[^\\\"]+)\\\"/ | display @timestamp, service, kubernetes.container_name, method, route, path, status, duration_ms, trace_id, @message | sort @timestamp desc | limit 200"
+          title  = "Backend Logs"
+          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, kubernetes.container_name, kubernetes.pod_name, @message | filter kubernetes.container_name = '${var.backend_service_name}' | sort @timestamp desc | limit 200"
           region = var.region
           view   = "table"
         }
