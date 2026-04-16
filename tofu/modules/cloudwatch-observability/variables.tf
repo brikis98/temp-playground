@@ -43,3 +43,9 @@ variable "application_log_group_name" {
   type        = string
   default     = ""
 }
+
+variable "application_signals_environment" {
+  description = "Application Signals environment dimension value (from deployment.environment resource attribute)."
+  type        = string
+  default     = "prod"
+}

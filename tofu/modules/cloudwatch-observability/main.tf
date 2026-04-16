@@ -114,13 +114,13 @@ locals {
         width  = 8
         height = 6
         properties = {
-          title  = "Frontend Request Rate"
+          title  = "Frontend Requests/Min"
           view   = "timeSeries"
           region = var.region
-          stat   = "Average"
+          stat   = "SampleCount"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "RequestRate", "Service", var.frontend_service_name]
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
           ]
         }
       },
@@ -137,7 +137,7 @@ locals {
           stat   = "p95"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "Latency", "Service", var.frontend_service_name]
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
           ]
         }
       },
@@ -148,14 +148,14 @@ locals {
         width  = 8
         height = 6
         properties = {
-          title  = "Frontend 4xx/5xx Rate"
+          title  = "Frontend 4xx/5xx Count"
           view   = "timeSeries"
           region = var.region
-          stat   = "Average"
+          stat   = "Sum"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "ErrorRate", "Service", var.frontend_service_name, { label = "4xx" }],
-            [".", "FaultRate", ".", ".", { label = "5xx" }]
+            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.frontend_service_name, { label = "4xx", stat = "Sum" }],
+            [".", "Fault", ".", ".", ".", ".", { label = "5xx", stat = "Sum" }]
           ]
         }
       },
@@ -166,13 +166,13 @@ locals {
         width  = 8
         height = 6
         properties = {
-          title  = "Backend Request Rate"
+          title  = "Backend Requests/Min"
           view   = "timeSeries"
           region = var.region
-          stat   = "Average"
+          stat   = "SampleCount"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "RequestRate", "Service", var.backend_service_name]
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
           ]
         }
       },
@@ -189,7 +189,7 @@ locals {
           stat   = "p95"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "Latency", "Service", var.backend_service_name]
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
           ]
         }
       },
@@ -200,14 +200,14 @@ locals {
         width  = 8
         height = 6
         properties = {
-          title  = "Backend 4xx/5xx Rate"
+          title  = "Backend 4xx/5xx Count"
           view   = "timeSeries"
           region = var.region
-          stat   = "Average"
+          stat   = "Sum"
           period = 60
           metrics = [
-            ["AWS/ApplicationSignals", "ErrorRate", "Service", var.backend_service_name, { label = "4xx" }],
-            [".", "FaultRate", ".", ".", { label = "5xx" }]
+            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.backend_service_name, { label = "4xx", stat = "Sum" }],
+            [".", "Fault", ".", ".", ".", ".", { label = "5xx", stat = "Sum" }]
           ]
         }
       },
