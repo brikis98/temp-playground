@@ -1,5 +1,5 @@
 import request from "supertest";
-import app from "./app.js";
+import app from "./";
 
 describe("Test the app", () => {
   test("Get / should return Hello, World!", async () => {

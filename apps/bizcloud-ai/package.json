@@ -2,7 +2,7 @@
   "name": "bizcloud-ai",
   "description": "BizCloud AI. By Business Corp.",
   "type": "module",
-  "main": "app.js",
+  "main": "",
   "scripts": {
     "start": "node server.js",
     "start:dev": "nodemon server.js",
