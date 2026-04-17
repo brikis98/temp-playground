@@ -9,4 +9,4 @@ patches:
 images:
   - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-frontend
-    newTag: v3
+    newTag: v4
