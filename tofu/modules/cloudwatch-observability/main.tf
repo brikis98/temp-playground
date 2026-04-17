@@ -72,6 +72,19 @@ locals {
         }
       },
       {
+        type   = "log"
+        x      = 0
+        y      = 12
+        width  = 24
+        height = 8
+        properties = {
+          title  = "Frontend Latency by Route"
+          query  = format("SOURCE '%s' | fields route, path, status, duration_ms, @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | filter ispresent(duration_ms) and ispresent(status) | stats pct(duration_ms, 50), pct(duration_ms, 90), pct(duration_ms, 95), pct(duration_ms, 99), count(*) by route, path, status | sort count desc | limit 100", local.app_log_group_name, var.frontend_service_name)
+          region = var.region
+          view   = "table"
+        }
+      },
+      {
         type   = "metric"
         x      = 8
         y      = 6
@@ -108,7 +121,7 @@ locals {
       {
         type   = "metric"
         x      = 0
-        y      = 12
+        y      = 20
         width  = 8
         height = 6
         properties = {
@@ -125,7 +138,7 @@ locals {
       {
         type   = "metric"
         x      = 8
-        y      = 12
+        y      = 20
         width  = 8
         height = 6
         properties = {
@@ -142,7 +155,7 @@ locals {
       {
         type   = "metric"
         x      = 16
-        y      = 12
+        y      = 20
         width  = 8
         height = 6
         properties = {
@@ -159,7 +172,7 @@ locals {
       {
         type   = "metric"
         x      = 0
-        y      = 18
+        y      = 26
         width  = 8
         height = 6
         properties = {
@@ -174,9 +187,22 @@ locals {
         }
       },
       {
+        type   = "log"
+        x      = 0
+        y      = 32
+        width  = 24
+        height = 8
+        properties = {
+          title  = "Backend Latency by Route"
+          query  = format("SOURCE '%s' | fields route, path, status, duration_ms, @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | filter ispresent(duration_ms) and ispresent(status) | stats pct(duration_ms, 50), pct(duration_ms, 90), pct(duration_ms, 95), pct(duration_ms, 99), count(*) by route, path, status | sort count desc | limit 100", local.app_log_group_name, var.backend_service_name)
+          region = var.region
+          view   = "table"
+        }
+      },
+      {
         type   = "metric"
         x      = 8
-        y      = 18
+        y      = 26
         width  = 8
         height = 6
         properties = {
@@ -193,7 +219,7 @@ locals {
       {
         type   = "metric"
         x      = 16
-        y      = 18
+        y      = 26
         width  = 8
         height = 6
         properties = {
@@ -210,7 +236,7 @@ locals {
       {
         type   = "log"
         x      = 0
-        y      = 24
+        y      = 40
         width  = 24
         height = 8
         properties = {
@@ -223,7 +249,7 @@ locals {
       {
         type   = "log"
         x      = 0
-        y      = 32
+        y      = 48
         width  = 24
         height = 8
         properties = {
@@ -236,7 +262,7 @@ locals {
       {
         type   = "metric"
         x      = 0
-        y      = 40
+        y      = 56
         width  = 8
         height = 6
         properties = {
@@ -253,7 +279,7 @@ locals {
       {
         type   = "metric"
         x      = 8
-        y      = 40
+        y      = 56
         width  = 8
         height = 6
         properties = {
@@ -270,7 +296,7 @@ locals {
       {
         type   = "metric"
         x      = 16
-        y      = 40
+        y      = 56
         width  = 8
         height = 6
         properties = {
@@ -287,7 +313,7 @@ locals {
       {
         type   = "metric"
         x      = 0
-        y      = 46
+        y      = 62
         width  = 8
         height = 6
         properties = {
@@ -304,7 +330,7 @@ locals {
       {
         type   = "metric"
         x      = 8
-        y      = 46
+        y      = 62
         width  = 8
         height = 6
         properties = {
@@ -316,19 +342,6 @@ locals {
           metrics = [
             ["ContainerInsights", "pod_number_of_container_restarts", "ClusterName", var.cluster_name]
           ]
-        }
-      },
-      {
-        type   = "log"
-        x      = 0
-        y      = 52
-        width  = 24
-        height = 8
-        properties = {
-          title  = "Latency by Route"
-          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"route\\\":\\\"(?<route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<path>[^\\\"]+)\\\"/ | parse @message /\\\"duration_ms\\\":(?<duration_ms>[0-9.]+)/ | stats pct(duration_ms, 50) as p50_ms, pct(duration_ms, 90) as p90_ms, pct(duration_ms, 95) as p95_ms, pct(duration_ms, 99) as p99_ms, count(*) as requests by coalesce(route, path) as request_path | sort p95_ms desc | limit 100", local.app_log_group_name, var.frontend_service_name, var.backend_service_name)
-          region = var.region
-          view   = "table"
         }
       }
     ]
