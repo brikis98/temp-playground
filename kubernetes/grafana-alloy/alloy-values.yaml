@@ -1,0 +1,126 @@
+cluster:
+  name: jim-testing
+destinations:
+  - name: grafana-cloud-metrics
+    type: prometheus
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.metrics_service.data["prom-url"])
+    auth:
+      type: basic
+      usernameKey: prom-username
+      passwordKey: access-token
+    secret:
+      create: false
+      name: grafana-creds
+      namespace: monitoring
+  - name: grafana-cloud-logs
+    type: loki
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["loki-url"])
+    auth:
+      type: basic
+      usernameKey: loki-username
+      passwordKey: access-token
+    secret:
+      create: false
+      name: grafana-creds
+      namespace: monitoring
+  - name: gc-otlp-endpoint
+    type: otlp
+    protocol: http
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["otlp-url"])
+    auth:
+      type: basic
+      usernameKey: otlp-username
+      passwordKey: access-token
+    secret:
+      create: false
+      name: grafana-creds
+      namespace: monitoring
+    metrics:
+      enabled: true
+    logs:
+      enabled: true
+    traces:
+      enabled: true
+  - name: grafana-cloud-profiles
+    type: pyroscope
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["pyroscope-url"])
+    auth:
+      type: basic
+      usernameKey: pyroscope-username
+      passwordKey: access-token
+    secret:
+      create: false
+      name: grafana-creds
+      namespace: monitoring
+clusterMetrics:
+  enabled: true
+  opencost:
+    enabled: true
+    metricsSource: grafana-cloud-metrics
+    opencost:
+      exporter:
+        defaultClusterId: jim-testing
+      prometheus:
+        existingSecretName: grafana-cloud-metrics-grafana-k8s-monitoring
+        external:
+          url: https://prometheus-prod-68-prod-eu-west-6.grafana.net./api/prom
+  kepler:
+    enabled: true
+clusterEvents:
+  enabled: true
+podLogs:
+  enabled: true
+applicationObservability:
+  enabled: true
+  receivers:
+    otlp:
+      grpc:
+        enabled: true
+        port: 4317
+      http:
+        enabled: true
+        port: 4318
+    zipkin:
+      enabled: true
+      port: 9411
+autoInstrumentation:
+  enabled: true
+  beyla:
+    deliverTracesToApplicationObservability: false
+profiling:
+  enabled: true
+integrations:
+  alloy:
+    instances:
+      - name: alloy
+        labelSelectors:
+          app.kubernetes.io/name:
+            - alloy-metrics
+            - alloy-singleton
+            - alloy-logs
+            - alloy-receiver
+            - alloy-profiles
+alloy-metrics:
+  enabled: true
+alloy-singleton:
+  enabled: true
+alloy-logs:
+  enabled: true
+alloy-receiver:
+  enabled: true
+  alloy:
+    extraPorts:
+      - name: otlp-grpc
+        port: 4317
+        targetPort: 4317
+        protocol: TCP
+      - name: otlp-http
+        port: 4318
+        targetPort: 4318
+        protocol: TCP
+      - name: zipkin
+        port: 9411
+        targetPort: 9411
+        protocol: TCP
+alloy-profiles:
+  enabled: true
