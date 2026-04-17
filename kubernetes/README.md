@@ -10,6 +10,7 @@ This folder has Kustomize manifests for all BizCloud apps.
 - `apps/_shared`: shared Kustomize building blocks used by all apps
 - `argocd`: Argo CD cluster registration
 - `argo-rollouts`: Argo Rollouts install manifests
+- `observability/grafana-alloy`: Grafana Alloy + Kubernetes Monitoring Helm deployment
 
 Each app has the same layout:
 
@@ -39,6 +40,16 @@ Get ingress hostname:
 ```shell
 kubectl get ingress bizcloud-frontend -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
+
+## Grafana Alloy observability
+
+Deploy Grafana Alloy and Kubernetes monitoring components:
+
+```shell
+kubectl apply --enable-helm -k ./observability/grafana-alloy
+```
+
+Before applying, replace placeholder values in `observability/grafana-alloy/alloy-values.yaml` with your Grafana Cloud instance IDs and access policy token.
 
 ## Argo CD
 
