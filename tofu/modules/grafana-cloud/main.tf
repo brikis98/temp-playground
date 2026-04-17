@@ -8,9 +8,12 @@ resource "grafana_apps_productactivation_k8so11yconfig_v1alpha1" "k8s_o11y" {
   count = var.enable_kubernetes_monitoring ? 1 : 0
 
   provider = grafana.cloud
-  enabled  = true
 
-  metadata = {
+  spec {
+    enabled = true
+  }
+
+  metadata {
     uid = "global"
   }
 }
@@ -19,9 +22,12 @@ resource "grafana_apps_productactivation_appo11yconfig_v1alpha1" "app_o11y" {
   count = var.enable_application_observability ? 1 : 0
 
   provider = grafana.cloud
-  enabled  = true
 
-  metadata = {
+  spec {
+    enabled = true
+  }
+
+  metadata {
     uid = "global"
   }
 }
