@@ -215,7 +215,7 @@ locals {
         height = 8
         properties = {
           title  = "Frontend Logs"
-          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, kubernetes.container_name, kubernetes.pod_name, @message | filter kubernetes.container_name = '${var.frontend_service_name}' | sort @timestamp desc | limit 200"
+          query  = format("SOURCE '%s' | fields @timestamp, @logStream, @message | filter @logStream like /%s/ or @message like /%s/ | sort @timestamp desc | limit 200", local.app_log_group_name, var.frontend_service_name, var.frontend_service_name)
           region = var.region
           view   = "table"
         }
@@ -228,7 +228,7 @@ locals {
         height = 8
         properties = {
           title  = "Backend Logs"
-          query  = "SOURCE '${local.app_log_group_name}' | fields @timestamp, kubernetes.container_name, kubernetes.pod_name, @message | filter kubernetes.container_name = '${var.backend_service_name}' | sort @timestamp desc | limit 200"
+          query  = format("SOURCE '%s' | fields @timestamp, @logStream, @message | filter @logStream like /%s/ or @message like /%s/ | sort @timestamp desc | limit 200", local.app_log_group_name, var.backend_service_name, var.backend_service_name)
           region = var.region
           view   = "table"
         }
@@ -334,21 +334,7 @@ resource "aws_cloudwatch_query_definition" "recent_requests" {
 
   log_group_names = [local.app_log_group_name]
 
-  query_string = <<-EOT
-    fields @timestamp, @message
-    | filter @message like /\"event\":\"http_request\"/
-    | parse @message /\"service\":\"(?<service>[^\"]+)\"/
-    | parse @message /\"method\":\"(?<method>[^\"]+)\"/
-    | parse @message /\"route\":\"(?<route>[^\"]+)\"/
-    | parse @message /\"path\":\"(?<path>[^\"]+)\"/
-    | parse @message /\"status\":(?<status>\d+)/
-    | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/
-    | parse @message /\"trace_id\":\"(?<trace_id>[^\"]+)\"/
-    | filter service = "${var.frontend_service_name}" or service = "${var.backend_service_name}"
-    | fields @timestamp, service, method, route, path, status, duration_ms, trace_id
-    | sort @timestamp desc
-    | limit 200
-  EOT
+  query_string = format("fields @timestamp, @logStream, @message | filter @message like /http_request/ | filter @logStream like /%s/ or @logStream like /%s/ or @message like /%s/ or @message like /%s/ | sort @timestamp desc | limit 200", var.frontend_service_name, var.backend_service_name, var.frontend_service_name, var.backend_service_name)
 }
 
 resource "aws_cloudwatch_query_definition" "latency_by_route" {
@@ -356,17 +342,7 @@ resource "aws_cloudwatch_query_definition" "latency_by_route" {
 
   log_group_names = [local.app_log_group_name]
 
-  query_string = <<-EOT
-    fields @message
-    | filter @message like /\"event\":\"http_request\"/
-    | parse @message /\"service\":\"(?<service>[^\"]+)\"/
-    | parse @message /\"route\":\"(?<route>[^\"]+)\"/
-    | parse @message /\"path\":\"(?<path>[^\"]+)\"/
-    | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/
-    | filter service = "${var.frontend_service_name}" or service = "${var.backend_service_name}"
-    | stats pct(duration_ms, 50) as p50_ms, pct(duration_ms, 90) as p90_ms, pct(duration_ms, 95) as p95_ms, pct(duration_ms, 99) as p99_ms, count(*) as requests by service, coalesce(route, path) as request_path
-    | sort p95_ms desc
-  EOT
+  query_string = format("fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"route\\\":\\\"(?<cwobs_route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\\\"]+)\\\"/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration_ms>[0-9.]+)/ | stats pct(cwobs_duration_ms, 50) as p50_ms, pct(cwobs_duration_ms, 90) as p90_ms, pct(cwobs_duration_ms, 95) as p95_ms, pct(cwobs_duration_ms, 99) as p99_ms, count(*) as requests by coalesce(cwobs_route, cwobs_path) as request_path | sort p95_ms desc", var.frontend_service_name, var.backend_service_name)
 }
 
 resource "aws_cloudwatch_query_definition" "errors" {
@@ -374,20 +350,5 @@ resource "aws_cloudwatch_query_definition" "errors" {
 
   log_group_names = [local.app_log_group_name]
 
-  query_string = <<-EOT
-    fields @timestamp, @message
-    | filter @message like /\"event\":\"http_request\"/
-    | parse @message /\"service\":\"(?<service>[^\"]+)\"/
-    | parse @message /\"method\":\"(?<method>[^\"]+)\"/
-    | parse @message /\"route\":\"(?<route>[^\"]+)\"/
-    | parse @message /\"path\":\"(?<path>[^\"]+)\"/
-    | parse @message /\"status\":(?<status>\d+)/
-    | parse @message /\"duration_ms\":(?<duration_ms>[0-9.]+)/
-    | parse @message /\"trace_id\":\"(?<trace_id>[^\"]+)\"/
-    | filter service = "${var.frontend_service_name}" or service = "${var.backend_service_name}"
-    | filter toNumber(status) >= 400
-    | fields @timestamp, service, method, route, path, status, duration_ms, trace_id, @message
-    | sort @timestamp desc
-    | limit 200
-  EOT
+  query_string = format("fields @timestamp, @logStream, @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | filter @message like /\\\"status\\\":4\\d\\d/ or @message like /\\\"status\\\":5\\d\\d/ | sort @timestamp desc | limit 200", var.frontend_service_name, var.backend_service_name)
 }
