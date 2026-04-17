@@ -6,8 +6,6 @@ This is an OpenTofu module to deploy the Biz Cloud AI SaaS stack. This module in
 - EKS cluster add-ons, such as ExternalDNS and Argo CD
 - ECR repos for BizCloud AI, frontend, and backend Docker images
 - OIDC provider and IAM roles to do CI/CD for BizCloud apps
-- Native CloudWatch observability resources:
-  - CloudWatch dashboard
 
 ## Quick start
 
@@ -61,7 +59,5 @@ kubectl apply -k apps/bizcloud-backend/overlays/eks-alb
 kubectl apply -k argocd
 ```
 
-## CloudWatch observability notes
-
-- Application and infrastructure metrics are shown in a native CloudWatch dashboard (`cloudwatch_dashboard_url` output).
-- The dashboard includes a `Latency by Route` Logs Insights widget at the end.
+Deploy Grafana Alloy + Kubernetes Monitoring components by following the README in
+[/kubernetes/grafana-alloy](/kubernetes/grafana-alloy).

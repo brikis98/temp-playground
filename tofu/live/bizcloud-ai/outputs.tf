@@ -23,11 +23,6 @@ output "external_dns_addon_arn" {
   value       = module.eks_cluster_add_ons.external_dns_addon_arn
 }
 
-output "cloudwatch_observability_addon_arn" {
-  description = "ARN of the CloudWatch Observability EKS add-on when enabled."
-  value       = module.eks_cluster_add_ons.cloudwatch_observability_addon_arn
-}
-
 output "bizcloud_ai_ecr_repo_url" {
   description = "URL of the bizcloud-ai ECR repo"
   value       = aws_ecr_repository.bizcloud_ai.repository_url
@@ -61,19 +56,4 @@ output "github_actions_tofu_plan_role_arn" {
 output "github_actions_tofu_apply_role_arn" {
   description = "IAM role ARN for tofu apply workflow"
   value       = module.github_actions_oidc_iam.tofu_apply_role_arn
-}
-
-output "cloudwatch_dashboard_name" {
-  description = "Name of the native CloudWatch observability dashboard."
-  value       = module.cloudwatch_observability.dashboard_name
-}
-
-output "cloudwatch_dashboard_url" {
-  description = "AWS Console URL for the native CloudWatch observability dashboard."
-  value       = module.cloudwatch_observability.dashboard_url
-}
-
-output "cloudwatch_application_log_group_name" {
-  description = "Application log group used by CloudWatch Logs Insights dashboard widgets."
-  value       = module.cloudwatch_observability.application_log_group_name
 }

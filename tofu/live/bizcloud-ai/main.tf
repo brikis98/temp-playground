@@ -15,8 +15,6 @@ module "eks_cluster_add_ons" {
 
   cluster_name = module.eks_cluster.cluster_name
 
-  enable_cloudwatch_observability = true
-
   enable_external_dns = true
 
   enable_argocd                                   = true
@@ -33,15 +31,6 @@ module "eks_cluster_add_ons" {
   ]
 
   depends_on = [module.eks_cluster]
-}
-
-module "cloudwatch_observability" {
-  source = "../../modules/cloudwatch-observability"
-
-  cluster_name          = module.eks_cluster.cluster_name
-  region                = local.aws_region
-  frontend_service_name = "bizcloud-frontend"
-  backend_service_name  = "bizcloud-backend"
 }
 
 resource "aws_ecr_repository" "bizcloud_ai" {
