@@ -1,116 +1,12 @@
 locals {
   app_log_group_name = var.application_log_group_name != "" ? var.application_log_group_name : "/aws/containerinsights/${var.cluster_name}/application"
 
-  query_filter_services = "(service='${var.frontend_service_name}' or service='${var.backend_service_name}')"
-
   dashboard_widgets = concat(
     [
       {
         type   = "metric"
         x      = 0
         y      = 0
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Cluster Node Count"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Average"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "cluster_node_count", "ClusterName", var.cluster_name]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 8
-        y      = 0
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Node CPU Utilization (%)"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Average"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "node_cpu_utilization", "ClusterName", var.cluster_name]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 16
-        y      = 0
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Node Memory Utilization (%)"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Average"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "node_memory_utilization", "ClusterName", var.cluster_name]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 6
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Pod Network RX (bytes/s)"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Average"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "pod_network_rx_bytes", "ClusterName", var.cluster_name, "Namespace", var.namespace]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 8
-        y      = 6
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Pod Network TX (bytes/s)"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Average"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "pod_network_tx_bytes", "ClusterName", var.cluster_name, "Namespace", var.namespace]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 16
-        y      = 6
-        width  = 8
-        height = 6
-        properties = {
-          title  = "Pod Restart Count"
-          view   = "timeSeries"
-          region = var.region
-          stat   = "Sum"
-          period = 60
-          metrics = [
-            ["ContainerInsights", "pod_number_of_container_restarts", "ClusterName", var.cluster_name, "Namespace", var.namespace]
-          ]
-        }
-      },
-      {
-        type   = "metric"
-        x      = 0
-        y      = 12
         width  = 8
         height = 6
         properties = {
@@ -127,7 +23,24 @@ locals {
       {
         type   = "metric"
         x      = 8
-        y      = 12
+        y      = 0
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Frontend Latency p50 (ms)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "p50"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 0
         width  = 8
         height = 6
         properties = {
@@ -143,26 +56,59 @@ locals {
       },
       {
         type   = "metric"
-        x      = 16
-        y      = 12
+        x      = 0
+        y      = 6
         width  = 8
         height = 6
         properties = {
-          title  = "Frontend 4xx/5xx Count"
+          title  = "Frontend Latency p99 (ms)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "p99"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 8
+        y      = 6
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Frontend 4xx Count"
           view   = "timeSeries"
           region = var.region
           stat   = "Sum"
           period = 60
           metrics = [
-            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.frontend_service_name, { label = "4xx", stat = "Sum" }],
-            [".", "Fault", ".", ".", ".", ".", { label = "5xx", stat = "Sum" }]
+            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 6
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Frontend 5xx Count"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Sum"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Fault", "Environment", var.application_signals_environment, "Service", var.frontend_service_name]
           ]
         }
       },
       {
         type   = "metric"
         x      = 0
-        y      = 18
+        y      = 12
         width  = 8
         height = 6
         properties = {
@@ -179,7 +125,24 @@ locals {
       {
         type   = "metric"
         x      = 8
-        y      = 18
+        y      = 12
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Backend Latency p50 (ms)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "p50"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 12
         width  = 8
         height = 6
         properties = {
@@ -195,19 +158,52 @@ locals {
       },
       {
         type   = "metric"
-        x      = 16
+        x      = 0
         y      = 18
         width  = 8
         height = 6
         properties = {
-          title  = "Backend 4xx/5xx Count"
+          title  = "Backend Latency p99 (ms)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "p99"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Latency", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 8
+        y      = 18
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Backend 4xx Count"
           view   = "timeSeries"
           region = var.region
           stat   = "Sum"
           period = 60
           metrics = [
-            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.backend_service_name, { label = "4xx", stat = "Sum" }],
-            [".", "Fault", ".", ".", ".", ".", { label = "5xx", stat = "Sum" }]
+            ["ApplicationSignals", "Error", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 18
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Backend 5xx Count"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Sum"
+          period = 60
+          metrics = [
+            ["ApplicationSignals", "Fault", "Environment", var.application_signals_environment, "Service", var.backend_service_name]
           ]
         }
       },
@@ -237,6 +233,91 @@ locals {
           view   = "table"
         }
       },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 40
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Cluster Node Count"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Average"
+          period = 60
+          metrics = [
+            ["ContainerInsights", "cluster_node_count", "ClusterName", var.cluster_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 8
+        y      = 40
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Node CPU Utilization (%)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Average"
+          period = 60
+          metrics = [
+            ["ContainerInsights", "node_cpu_utilization", "ClusterName", var.cluster_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 16
+        y      = 40
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Node Memory Utilization (%)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Average"
+          period = 60
+          metrics = [
+            ["ContainerInsights", "node_memory_utilization", "ClusterName", var.cluster_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 0
+        y      = 46
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Node Disk Utilization (%)"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Average"
+          period = 60
+          metrics = [
+            ["ContainerInsights", "node_filesystem_utilization", "ClusterName", var.cluster_name]
+          ]
+        }
+      },
+      {
+        type   = "metric"
+        x      = 8
+        y      = 46
+        width  = 8
+        height = 6
+        properties = {
+          title  = "Pod Restart Count"
+          view   = "timeSeries"
+          region = var.region
+          stat   = "Sum"
+          period = 60
+          metrics = [
+            ["ContainerInsights", "pod_number_of_container_restarts", "ClusterName", var.cluster_name]
+          ]
+        }
+      }
     ]
   )
 }
