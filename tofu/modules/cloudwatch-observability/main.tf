@@ -79,7 +79,7 @@ locals {
         height = 8
         properties = {
           title  = "Frontend Latency by Route"
-          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\"]+)\\\"/ | parse @message /\\\"status\\\":(?<cwobs_status>[0-9]{3})/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration>[0-9.]+)/ | filter ispresent(cwobs_path) and ispresent(cwobs_status) and ispresent(cwobs_duration) | stats pct(cwobs_duration, 50), pct(cwobs_duration, 90), pct(cwobs_duration, 95), pct(cwobs_duration, 99), count(*) by cwobs_path, cwobs_status | sort count desc | limit 100", local.app_log_group_name, var.frontend_service_name)
+          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\"]+)\\\"/ | parse @message /\\\"status\\\":(?<cwobs_status>[0-9]{3})/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration>[0-9.]+)/ | filter ispresent(cwobs_path) and ispresent(cwobs_status) and ispresent(cwobs_duration) | stats count(*) as request_count, pct(cwobs_duration, 50), pct(cwobs_duration, 90), pct(cwobs_duration, 95), pct(cwobs_duration, 99) by cwobs_path, cwobs_status | sort request_count desc | limit 100", local.app_log_group_name, var.frontend_service_name)
           region = var.region
           view   = "table"
         }
@@ -194,7 +194,7 @@ locals {
         height = 8
         properties = {
           title  = "Backend Latency by Route"
-          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\"]+)\\\"/ | parse @message /\\\"status\\\":(?<cwobs_status>[0-9]{3})/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration>[0-9.]+)/ | filter ispresent(cwobs_path) and ispresent(cwobs_status) and ispresent(cwobs_duration) | stats pct(cwobs_duration, 50), pct(cwobs_duration, 90), pct(cwobs_duration, 95), pct(cwobs_duration, 99), count(*) by cwobs_path, cwobs_status | sort count desc | limit 100", local.app_log_group_name, var.backend_service_name)
+          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\"]+)\\\"/ | parse @message /\\\"status\\\":(?<cwobs_status>[0-9]{3})/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration>[0-9.]+)/ | filter ispresent(cwobs_path) and ispresent(cwobs_status) and ispresent(cwobs_duration) | stats count(*) as request_count, pct(cwobs_duration, 50), pct(cwobs_duration, 90), pct(cwobs_duration, 95), pct(cwobs_duration, 99) by cwobs_path, cwobs_status | sort request_count desc | limit 100", local.app_log_group_name, var.backend_service_name)
           region = var.region
           view   = "table"
         }
