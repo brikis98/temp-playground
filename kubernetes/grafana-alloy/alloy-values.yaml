@@ -3,7 +3,7 @@ cluster:
 destinations:
   - name: grafana-cloud-metrics
     type: prometheus
-    urlFrom: convert.nonsensitive(remote.kubernetes.secret.metrics_service.data["prom-url"])
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.grafana_cloud_metrics.data["prom-url"])
     auth:
       type: basic
       usernameKey: prom-username
@@ -14,7 +14,7 @@ destinations:
       namespace: monitoring
   - name: grafana-cloud-logs
     type: loki
-    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["loki-url"])
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.grafana_cloud_logs.data["loki-url"])
     auth:
       type: basic
       usernameKey: loki-username
@@ -26,7 +26,7 @@ destinations:
   - name: gc-otlp-endpoint
     type: otlp
     protocol: http
-    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["otlp-url"])
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.gc_otlp_endpoint.data["otlp-url"])
     auth:
       type: basic
       usernameKey: otlp-username
@@ -43,7 +43,7 @@ destinations:
       enabled: true
   - name: grafana-cloud-profiles
     type: pyroscope
-    urlFrom: convert.nonsensitive(remote.kubernetes.secret.logs_service.data["pyroscope-url"])
+    urlFrom: convert.nonsensitive(remote.kubernetes.secret.grafana_cloud_profiles.data["pyroscope-url"])
     auth:
       type: basic
       usernameKey: pyroscope-username
