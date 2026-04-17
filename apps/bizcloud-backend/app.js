@@ -2,21 +2,21 @@ import express from "express";
 
 const app = express();
 
-const metrics = {
-  synergy: "97.3%",
-  mean_time_to_powerpoint: "4 min",
-  maturity: "Bronze+",
-};
+app.use(loggingMiddleware);
 
 app.get("/", async (req, res) => {
-  res.status(200).json(metrics);
+  res.status(200).json({
+    synergy: "97.3%",
+    mean_time_to_powerpoint: "4 min",
+    maturity: "Bronze+",
+  });
 });
 
 app.get("/health", async (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-app.use((req, res, next) => {
+function loggingMiddleware(req, res, next) {
   const start = process.hrtime.bigint();
 
   res.on("finish", () => {
@@ -46,6 +46,6 @@ app.use((req, res, next) => {
   });
 
   next();
-});
+}
 
 export default app;

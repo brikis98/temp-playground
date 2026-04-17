@@ -3,6 +3,8 @@ import express from "express";
 const app = express();
 app.set("view engine", "ejs");
 
+app.use(loggingMiddleware);
+
 app.get("/", async (req, res) => {
   res.render("hello");
 });
@@ -11,8 +13,7 @@ app.get("/health", async (req, res) => {
   res.status(200).json({ ok: true });
 });
 
-// Simple middleware to log a message at the end of each request
-app.use((req, res, next) => {
+function loggingMiddleware(req, res, next) {
   const start = process.hrtime.bigint();
 
   res.on("finish", () => {
@@ -29,6 +30,6 @@ app.use((req, res, next) => {
   });
 
   next();
-});
+}
 
 export default app;
