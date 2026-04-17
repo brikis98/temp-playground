@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
-COPY *.js ./
+COPY *.js *.mjs ./
 
 FROM base AS dev
 USER node
@@ -24,7 +24,7 @@ WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
-COPY app.js server.js ./
+COPY *.js *.mjs ./
 
 USER node
 ENV NODE_ENV=production

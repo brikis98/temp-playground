@@ -8,7 +8,7 @@ COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 
 # Copy application sources once and reuse in downstream targets.
-COPY *.js ./
+COPY *.js *.mjs ./
 COPY views ./views
 
 FROM base AS dev
@@ -27,7 +27,7 @@ WORKDIR /usr/src/app
 
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --no-audit --no-fund
-COPY app.js server.js ./
+COPY *.js *.mjs ./
 COPY views ./views
 
 USER node
