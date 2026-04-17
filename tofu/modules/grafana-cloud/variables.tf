@@ -1,3 +1,7 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# REQUIRED PARAMETERS
+# ---------------------------------------------------------------------------------------------------------------------
+
 variable "cloud_access_policy_token" {
   description = "Grafana Cloud access policy token with permissions to activate products and manage synthetic monitoring."
   type        = string
@@ -8,6 +12,10 @@ variable "grafana_cloud_stack_id" {
   description = "Grafana Cloud stack ID for synthetic monitoring installation."
   type        = number
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# OPTIONAL PARAMETERS
+# ---------------------------------------------------------------------------------------------------------------------
 
 variable "enable_kubernetes_monitoring" {
   description = "Set to true to activate Grafana Cloud Kubernetes Monitoring."
@@ -31,6 +39,7 @@ variable "synthetic_monitoring_metrics_publisher_key" {
   description = "Synthetic Monitoring metrics publisher key from Grafana Cloud."
   type        = string
   sensitive   = true
+  default     = null
 }
 
 variable "synthetic_monitoring_default_probe_count" {
