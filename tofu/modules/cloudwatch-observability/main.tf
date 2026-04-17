@@ -317,6 +317,19 @@ locals {
             ["ContainerInsights", "pod_number_of_container_restarts", "ClusterName", var.cluster_name]
           ]
         }
+      },
+      {
+        type   = "log"
+        x      = 0
+        y      = 52
+        width  = 24
+        height = 8
+        properties = {
+          title  = "Latency by Route"
+          query  = format("SOURCE '%s' | fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"route\\\":\\\"(?<route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<path>[^\\\"]+)\\\"/ | parse @message /\\\"duration_ms\\\":(?<duration_ms>[0-9.]+)/ | stats pct(duration_ms, 50) as p50_ms, pct(duration_ms, 90) as p90_ms, pct(duration_ms, 95) as p95_ms, pct(duration_ms, 99) as p99_ms, count(*) as requests by coalesce(route, path) as request_path | sort p95_ms desc | limit 100", local.app_log_group_name, var.frontend_service_name, var.backend_service_name)
+          region = var.region
+          view   = "table"
+        }
       }
     ]
   )
@@ -327,28 +340,4 @@ resource "aws_cloudwatch_dashboard" "this" {
   dashboard_body = jsonencode({
     widgets = local.dashboard_widgets
   })
-}
-
-resource "aws_cloudwatch_query_definition" "recent_requests" {
-  name = "${var.name_prefix}-${var.cluster_name}-requests-recent"
-
-  log_group_names = [local.app_log_group_name]
-
-  query_string = format("fields @timestamp, @logStream, @message | filter @message like /http_request/ | filter @logStream like /%s/ or @logStream like /%s/ or @message like /%s/ or @message like /%s/ | sort @timestamp desc | limit 200", var.frontend_service_name, var.backend_service_name, var.frontend_service_name, var.backend_service_name)
-}
-
-resource "aws_cloudwatch_query_definition" "latency_by_route" {
-  name = "${var.name_prefix}-${var.cluster_name}-latency-by-route"
-
-  log_group_names = [local.app_log_group_name]
-
-  query_string = format("fields @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | parse @message /\\\"route\\\":\\\"(?<cwobs_route>[^\\\"]+)\\\"/ | parse @message /\\\"path\\\":\\\"(?<cwobs_path>[^\\\"]+)\\\"/ | parse @message /\\\"duration_ms\\\":(?<cwobs_duration_ms>[0-9.]+)/ | stats pct(cwobs_duration_ms, 50) as p50_ms, pct(cwobs_duration_ms, 90) as p90_ms, pct(cwobs_duration_ms, 95) as p95_ms, pct(cwobs_duration_ms, 99) as p99_ms, count(*) as requests by coalesce(cwobs_route, cwobs_path) as request_path | sort p95_ms desc", var.frontend_service_name, var.backend_service_name)
-}
-
-resource "aws_cloudwatch_query_definition" "errors" {
-  name = "${var.name_prefix}-${var.cluster_name}-errors"
-
-  log_group_names = [local.app_log_group_name]
-
-  query_string = format("fields @timestamp, @logStream, @message | filter @message like /\\\"event\\\":\\\"http_request\\\"/ | filter @message like /\\\"service\\\":\\\"%s\\\"/ or @message like /\\\"service\\\":\\\"%s\\\"/ | filter @message like /\\\"status\\\":4\\d\\d/ or @message like /\\\"status\\\":5\\d\\d/ | sort @timestamp desc | limit 200", var.frontend_service_name, var.backend_service_name)
 }

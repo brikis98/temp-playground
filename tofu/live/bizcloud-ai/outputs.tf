@@ -74,21 +74,6 @@ output "cloudwatch_dashboard_url" {
 }
 
 output "cloudwatch_application_log_group_name" {
-  description = "Application log group used by CloudWatch Logs Insights query definitions."
+  description = "Application log group used by CloudWatch Logs Insights dashboard widgets."
   value       = module.cloudwatch_observability.application_log_group_name
-}
-
-output "cloudwatch_recent_requests_query_id" {
-  description = "CloudWatch query definition ID for recent frontend/backend requests."
-  value       = module.cloudwatch_observability.recent_requests_query_id
-}
-
-output "cloudwatch_latency_by_route_query_id" {
-  description = "CloudWatch query definition ID for latency percentiles by route."
-  value       = module.cloudwatch_observability.latency_by_route_query_id
-}
-
-output "cloudwatch_errors_query_id" {
-  description = "CloudWatch query definition ID for request errors."
-  value       = module.cloudwatch_observability.errors_query_id
 }

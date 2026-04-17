@@ -8,7 +8,6 @@ This is an OpenTofu module to deploy the Biz Cloud AI SaaS stack. This module in
 - OIDC provider and IAM roles to do CI/CD for BizCloud apps
 - Native CloudWatch observability resources:
   - CloudWatch dashboard
-  - CloudWatch Logs Insights saved queries
 
 ## Quick start
 
@@ -65,7 +64,4 @@ kubectl apply -k argocd
 ## CloudWatch observability notes
 
 - Application and infrastructure metrics are shown in a native CloudWatch dashboard (`cloudwatch_dashboard_url` output).
-- Saved Logs Insights queries are created for:
-  - recent frontend/backend requests
-  - latency percentiles by route
-  - request errors
+- The dashboard includes a `Latency by Route` Logs Insights widget at the end.
