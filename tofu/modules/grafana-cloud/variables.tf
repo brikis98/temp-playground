@@ -2,17 +2,6 @@
 # REQUIRED PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------
 
-variable "cloud_access_policy_token" {
-  description = "Grafana Cloud access policy token with permissions to activate products and manage synthetic monitoring."
-  type        = string
-  sensitive   = true
-}
-
-variable "grafana_cloud_stack_id" {
-  description = "Grafana Cloud stack ID for synthetic monitoring installation."
-  type        = number
-}
-
 # ---------------------------------------------------------------------------------------------------------------------
 # OPTIONAL PARAMETERS
 # ---------------------------------------------------------------------------------------------------------------------
@@ -33,6 +22,12 @@ variable "enable_synthetic_monitoring" {
   description = "Set to true to install Synthetic Monitoring for the stack."
   type        = bool
   default     = false
+}
+
+variable "grafana_cloud_stack_id" {
+  description = "Grafana Cloud stack ID. Required if enable_synthetic_monitoring is true. Go to https://grafana.com/ -> Login to your account -> Click on your stack Under Grafana Cloud -> Click Details in the Grafana Cloud box -> Find the stack ID."
+  type        = number
+  default     = null
 }
 
 variable "synthetic_monitoring_metrics_publisher_key" {

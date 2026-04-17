@@ -1,13 +1,7 @@
-provider "grafana" {
-  alias = "cloud"
-
-  cloud_access_policy_token = var.cloud_access_policy_token
-}
-
 resource "grafana_apps_productactivation_k8so11yconfig_v1alpha1" "k8s_o11y" {
   count = var.enable_kubernetes_monitoring ? 1 : 0
 
-  provider = grafana.cloud
+  provider = grafana.stack
 
   spec {
     enabled = true
@@ -21,7 +15,7 @@ resource "grafana_apps_productactivation_k8so11yconfig_v1alpha1" "k8s_o11y" {
 resource "grafana_apps_productactivation_appo11yconfig_v1alpha1" "app_o11y" {
   count = var.enable_application_observability ? 1 : 0
 
-  provider = grafana.cloud
+  provider = grafana.stack
 
   spec {
     enabled = true

@@ -3,8 +3,9 @@ terraform {
 
   required_providers {
     grafana = {
-      source  = "grafana/grafana"
-      version = "~> 4.3"
+      source                = "grafana/grafana"
+      version               = "~> 4.3"
+      configuration_aliases = [grafana.cloud, grafana.stack]
     }
   }
 }
