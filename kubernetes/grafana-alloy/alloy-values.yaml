@@ -54,16 +54,6 @@ destinations:
       namespace: monitoring
 clusterMetrics:
   enabled: true
-  opencost:
-    enabled: true
-    metricsSource: grafana-cloud-metrics
-    opencost:
-      exporter:
-        defaultClusterId: jim-testing
-      prometheus:
-        existingSecretName: grafana-cloud-metrics-grafana-k8s-monitoring
-        external:
-          url: https://prometheus-prod-68-prod-eu-west-6.grafana.net./api/prom
   kepler:
     enabled: true
 clusterEvents:

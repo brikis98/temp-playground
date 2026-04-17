@@ -37,4 +37,18 @@
     - `PYROSCOPE_USERNAME`: The Pyroscope username. E.g., `1234567`.
     - `PASSWORD`: The password token for any of the above URLs (they should all be the same). E.g., `glc_abcd1234FDSDF34234sdfsdfsd234234234lkj234klj324lkj234lkjdvlkjblkjn653124`.
 8. Authenticate to your EKS cluster
-9. Run `kubectl kustomize --enable-helm grafana-alloy | kubectl apply -f -`
+9. Run Helm to install:
+
+    ```shell
+    cd kubernetes
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+    helm upgrade \
+      --install \
+      --rollback-on-failure \
+      --timeout 300s \
+      grafana-k8s-monitoring grafana/k8s-monitoring \
+      --version "^3" \
+      --namespace "monitoring" \
+      --values grafana-alloy/alloy-values.yaml
+    ```
