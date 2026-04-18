@@ -10,3 +10,6 @@ images:
   - name: app
     newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
     newTag: v1
+  - name: bizcloud-ai
+    newName: 168852252849.dkr.ecr.us-east-2.amazonaws.com/bizcloud-ai
+    newTag: aca670e17fd0af26ef2fbe26d84273aaa61a3478
