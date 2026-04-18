@@ -1,11 +1,14 @@
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http";
 import { OTLPMetricExporter } from "@opentelemetry/exporter-metrics-otlp-http";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
+import { BatchLogRecordProcessor } from "@opentelemetry/sdk-logs";
 import { PeriodicExportingMetricReader } from "@opentelemetry/sdk-metrics";
 import { NodeSDK } from "@opentelemetry/sdk-node";
 
 const traceExporter = new OTLPTraceExporter();
 const metricExporter = new OTLPMetricExporter();
+const logExporter = new OTLPLogExporter();
 
 const sdk = new NodeSDK({
   traceExporter,
@@ -13,7 +16,15 @@ const sdk = new NodeSDK({
     exporter: metricExporter,
     exportIntervalMillis: 60000,
   }),
-  instrumentations: [getNodeAutoInstrumentations()],
+  logRecordProcessors: [new BatchLogRecordProcessor(logExporter)],
+  instrumentations: [
+    getNodeAutoInstrumentations({
+      "@opentelemetry/instrumentation-winston": {
+        disableLogCorrelation: false,
+        disableLogSending: false,
+      },
+    }),
+  ],
 });
 
 sdk.start();

@@ -31,7 +31,7 @@ spec:
             - name: OTEL_METRICS_EXPORTER
               value: otlp
             - name: OTEL_LOGS_EXPORTER
-              value: none
+              value: otlp
             - name: OTEL_EXPORTER_OTLP_PROTOCOL
               value: http/protobuf
             - name: OTEL_EXPORTER_OTLP_ENDPOINT

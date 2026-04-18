@@ -11,13 +11,19 @@
   "author": "Yevgeniy Brikman",
   "license": "MIT",
   "dependencies": {
+    "@opentelemetry/api": "^1.9.0",
     "@opentelemetry/auto-instrumentations-node": "^0.67.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.207.0",
     "@opentelemetry/exporter-metrics-otlp-http": "^0.207.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.207.0",
+    "@opentelemetry/instrumentation-winston": "^0.53.0",
+    "@opentelemetry/sdk-logs": "^0.207.0",
     "@opentelemetry/sdk-metrics": "^2.1.0",
     "@opentelemetry/sdk-node": "^0.207.0",
+    "@opentelemetry/winston-transport": "^0.17.0",
     "ejs": "^5.0.1",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "winston": "^3.18.3"
   },
   "devDependencies": {
     "@eslint/css": "^1.1.0",
